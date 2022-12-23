@@ -1,0 +1,2 @@
+Error semántico (21): Linea 8 Se esperaba un tipo de dato 'ent' pero se encontró 'cad'
+Error sintáctico (13): Linea 10 Se esperaba un id pero se encontró entero

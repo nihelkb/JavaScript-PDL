@@ -1,0 +1,3 @@
+Error semántico (32): Linea 5 Se esperaba una expresion de tipo 'ent' o 'cad' pero se encontró: 'log'
+Error semántico (26): Linea 6 Fallo en el segundo campo del bucle for: Se esperaba tipo logico
+Error léxico (2): Linea 12 Cadena de mas de 64 caracteres

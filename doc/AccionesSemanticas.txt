@@ -1,0 +1,14 @@
+L: Leer -> c = leer()
+X: Concatenar -> cad = cad + c
+
+A: GenerarToken(parizq,-)           M: if(caracteres(lexema) > 64) error(2)
+B: GenerarToken(pardrch,-)             else GenerarToken(cad,lexema)
+C: GenerarToken(llaveizq,-)         N: if(valor > 32767) error(3)
+D: GenerarToken(llavedrch,-)           else GenerarToken(num,valor)
+E: GenerarToken(puntoYcoma,-)       O: if((pos=buscarTPR(lexema)) != -1)  
+F: GenerarToken(coma,-)                   GenerarToken(pos,-)
+G: GenerarToken(asign,-)               else 
+H: GenerarToken(asignSuma,-)              if (!contieneTS(lexema))  
+I: GenerarToken(mult,-)                     añadirTS(lexema)               
+J: GenerarToken(neg,-)                    posTS = buscarTS(lexema)                      
+K: GenerarToken(menor,-)                  GenerarToken(id,posTS)                                                 

@@ -1,0 +1,23 @@
+let n1 int;let n2 int;
+let l1 boolean;let l2 boolean;
+let cad
+	string			;
+input n1;
+l1 = l2;
+if (! l2) cad = 'hello';
+n2 += n1 * 378;
+
+print	33 
+		* 
+		n1 
+		* 
+		n2;
+function ff boolean(boolean ss)
+{
+	l2 =  l1;
+	if (l2) l1 = ff (ss);
+	varglobal = 33;
+	return ss;
+}		
+if (ff(!l1)) 
+    print varglobal;

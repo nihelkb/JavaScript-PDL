@@ -1,0 +1,22 @@
+// prueba para probar que primero se mira en la ts local antes que en la global (variable n)
+// recursividad
+// función llama a función
+
+let int n;
+print('introduzca el numero para hacer la resta factorial); 
+input(n);
+
+// Calcula el la resta factorial de n:
+// n = 5: 
+// 5-! = 5 - 4 - 3 - 2 - 1 = -5
+function factorial int (int n){         // parametro n igual que variable global
+    if(n < 1) return 0;
+    return n - factorial(n-1);          // recursividad
+}
+
+function imprimirResultado(int n){
+    print('el resultado de la resta factorial es: ');
+    print(n);
+}
+
+print(imprimirResultado(factorial(n)));  // función llama a otra función

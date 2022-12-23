@@ -1,0 +1,1 @@
+Error léxico (3): Linea 4 Entero fuera de rango, el numero es mayor de 32767

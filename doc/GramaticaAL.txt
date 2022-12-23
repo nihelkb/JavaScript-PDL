@@ -1,0 +1,17 @@
+Gramática del analizador léxico
+
+0. S -> dA | lB | _B | 'C | /D | +F | , | ; | delS | ( | ) | { | } | < | ! | =
+1. A -> dA | λ (oc1) 
+2. B -> lB | dB | _B | λ (oc2) 
+3. C -> c1C | '                
+4. D -> /E 
+5. E -> c2E | \nS
+6. F -> =
+
+l: A-Z, a-z
+d: 0-9
+del: espacio, \n, \t, \r
+c1: todos los caracteres - {'}
+c2: todos los caracteres - {\n}
+oc1: otro caracter no dígito
+oc2: otro caracter ni dígito ni letra ni barra baja

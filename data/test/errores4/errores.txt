@@ -1,0 +1,6 @@
+Error semántico (35): Linea 15 La función operacion debe devolver 'ent' pero se encontró 'log'
+Error semántico (44): Linea 16 Los dos tipos deben ser enteros pero son: 'log' y 'ent'
+Error semántico (29): Linea 17 Se esperaba un tipo de dato 'cad' pero se encontró un tipo erróneo
+Error semántico (45): Linea 17 El operador ! solo se puede usar con expresiones de tipo lógico pero se encontró una expresión de tipo 'cad'
+Error semántico (32): Linea 18 Se esperaba una expresion de tipo 'ent' o 'cad'
+Error sintáctico (12): Linea 18 Se esperaba un tipo de dato (int, boolean, string)

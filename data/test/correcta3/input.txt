@@ -1,0 +1,22 @@
+let int x;
+let int y;
+let int resultado;
+
+function recogerCoordenadas int() {
+    let int res = 0;
+    for (i = 10; i < 0; i = i - 1){
+        for (j = 10; j < 0; j = j - 1){
+            print('introduzca la coordenada x: ');
+            input(x);
+            print('introduzca la coordenada y: ');
+            input(y);
+            res = res - x - y;
+        }
+    }
+    return res;
+}
+resultado = recogerCoordenadas();
+if (resultado < 50) 
+    print('el resultado esta por debajo de la media: ');
+    
+print(resultado);

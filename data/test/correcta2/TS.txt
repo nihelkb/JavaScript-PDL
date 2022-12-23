@@ -1,0 +1,24 @@
+TABLA DE SIMBOLOS GLOBAL #1 :
+
+* LEXEMA : 'texto'
+  	Atributos :
+  		+ tipo: 'cad'
+  		+ despl: 0
+* LEXEMA : 'b1'
+  	Atributos :
+  		+ tipo: 'log'
+  		+ despl: 64
+* LEXEMA : 'i'
+  	Atributos :
+  		+ tipo: 'ent'
+  		+ despl: 65
+* LEXEMA : 'pideTexto'
+  	Atributos :
+  		+ tipo: 'func'
+  		+ TipoRetorno: 'tipo_vacio'
+  		+ numParam: 0
+  		+ EtiqFuncion: 'EtiqFuncion1'
+-----------------------------------------
+TABLA pideTexto #2 :
+
+-----------------------------------------

@@ -1,0 +1,37 @@
+Token: <tipo_token, Atributo>
+
+Palabras reservadas:
+<let,->      // 1
+<int,->      // 2
+<string,->   // 3
+<boolean,->  // 4
+<if,->       // 5
+<do,->       // 6
+<while,->    // 7
+<function,-> // 8
+<return,->   // 9
+<print,->    // 10
+<input,->    // 11
+
+Símbolos:
+<parizq,->      12
+<pardrch,->     13
+<llaveizq,->    14
+<llavedrch,->   15
+<puntoYcoma,->  16
+<coma,->        17
+<asign,->       18
+<asignSuma,->   19
+
+
+Operadores:
+<mult,->        20
+<neg,->         21
+<menor,->       22
+
+Genéricos:
+<cad,lexema>    23
+<num,valor>     24
+<id,puntTS>     25
+
+EOF            65535

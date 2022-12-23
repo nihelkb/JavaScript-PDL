@@ -1,0 +1,40 @@
+TABLA DE SIMBOLOS GLOBAL #1 :
+
+* LEXEMA : 'x'
+  	Atributos :
+  		+ tipo: 'ent'
+  		+ despl: 0
+* LEXEMA : 'y'
+  	Atributos :
+  		+ tipo: 'ent'
+  		+ despl: 1
+* LEXEMA : 'resultado'
+  	Atributos :
+  		+ tipo: 'ent'
+  		+ despl: 2
+* LEXEMA : 'recogerCoordenadas'
+  	Atributos :
+  		+ tipo: 'func'
+  		+ TipoRetorno: 'ent'
+  		+ numParam: 0
+  		+ EtiqFuncion: 'EtiqFuncion1'
+* LEXEMA : 'i'
+  	Atributos :
+  		+ tipo: 'ent'
+  		+ despl: 3
+* LEXEMA : 'j'
+  	Atributos :
+  		+ tipo: 'ent'
+  		+ despl: 4
+* LEXEMA : 'res'
+  	Atributos :
+  		+ tipo: 'ent'
+  		+ despl: 5
+-----------------------------------------
+TABLA recogerCoordenadas #2 :
+
+* LEXEMA : 'res'
+  	Atributos :
+  		+ tipo: 'ent'
+  		+ despl: 0
+-----------------------------------------
