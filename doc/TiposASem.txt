@@ -1,0 +1,179 @@
+Inicio -> {despl = 0, TSG = CrearTSG(), TSActual = TSG, zonaDecl = true} 
+P {DestruyeTS(TSG)}
+
+P->  B P''
+                 if(B.tipo == vacio)  P.tipo =  P''.tipo
+                 else if(B.tipo == tipo_error || P''.tipo == tipo_error) P.tipo=tipo_error
+                 else P.tipo = tipo_ok
+P -> F P''     { if(F.tipo == vacio) P.tipo = P''.tipo
+                else if (F.tipo == tipo_error || P''.tipo == tipo_error) P.tipo == tipo_error
+                else P.tipo = tipo_ok }
+P -> lambda   { P.tipo = vacio}
+.......................................................................................................
+B -> if ( E ) { if(E.tipo != logico) error
+     S          else B.tipo = S.tipo } 
+B -> let id T ; 
+        let zonaDecl= true
+            zonaDecl=false
+        id if(TSL == null)
+            AñadeTipoGlobal(id.pos,T.tipo)
+            AñadeDespGlobal(id.pos,despl)
+            despg = despg + T.ancho
+        else 
+            AñadeTipoLocal(id.pos,T.tipo)
+            AñadeDespLocal(id.pos,despl)
+            despl = despl + T.ancho
+B -> S         { B.tipo = S.tipo }
+B -> do { C }       { B.tipo = C.tipo 
+     while ( E ) ;    if(E.tipo != logico) error }
+.......................................................................................................
+C -> B C1       { if(B.tipo == tipo_error) error
+                  if(C1.tipo == vacio) C.tipo = tipo_ok
+                  else C.tipo = C1.tipo }
+C -> lambda     { C.tipo = vacio }
+.......................................................................................................
+T-> int         { T.tipo = int    T.ancho = 1 }
+T-> boolean     { T.tipo = boolean T.ancho = 1 }
+T-> string      { T.tipo = string  T.ancho = 64 }
+.......................................................................................................
+E -> R E2
+                if(R.tipo == ent && E2.tipo == logico) E.tipo = logico
+                else E.tipo = R.tipo
+
+.......................................................................................................
+S -> id S2      { pos = buscaIdTS(id)
+                  if(pos == NULL){
+                    insertTipoTSG(id.pos, ent)
+                    insertDespTSG(id.pos, despG)
+                    despG += 1
+                  }
+                  idTipo = buscaTipoTS(pos)
+                  if(idTipo == fun){
+                      numParam = buscaNumParamTSG(pos)
+                      tipoParam = buscaTipoParamTSG(pos)
+                      if(N.numParam == numParam && S2.tipoParam == tipoParam) S.tipo = tipo_ok
+                      else{
+                        if(tipoParam == vacio && S2.tipoParam != vacio) "error (no recibe argumentos)"
+                          else "error (llamada incorrecta)"
+                          S.tipo = tipo_error}
+                      }
+                  } 
+                  else if(idTipo == S2.tipo) S.tipo = idTipo 
+                 }
+S -> print E ;  { if(E.tipo == cad || E.tipo == ent)
+                  S.tipo = tipo_ok 
+                  else S.tipo = tipo_error }
+S -> input id ; { pos = buscaIdTS(id)                                                  
+                  if(pos == NULL) {
+                     insertTipoTSG(id.pos, ent)
+                     insertDespTSG(id.pos, despG)
+                     despG += 1
+                  }
+                  idTipo = buscaTipoTS(pos)
+                  if(idTipo == cad || idTipo == ent) S.tipo = tipo_ok 
+                  else S.tipo = tipo_error
+                 }    
+S -> return X ; { if(TSL!= NULL){
+                    tipoRet = buscaTipoRetTSG(funActual)
+                    if(X.tipo == tipoRet) {S.tipo = tipo_ok, S.tipoRet = tipoRet}
+                    else S.tipo = tipo_error, S.tipoRet = tipo_error
+                }
+                else S.tipo = tipo_ok, S.tipoRet = X.tipo} 
+.......................................................................................................
+E2-> < R E2' {if(R.tipo = ent && (E2.tipo = logico || E2.tipo == vacio)) E2.tipo = logico else error}                
+E2 -> lambda {E2.tipo = vacio}                
+.......................................................................................................
+R -> U R2      { if(R2.tipo == ent && U.tipo == ent) R.tipo = ent
+                 else R.tipo = U.tipo }
+.......................................................................................................
+R2 -> * U R2'' { if(U.tipo == ent && (R2''.tipo == ent || R2''.tipo == vacio)) R2.tipo = ent else error} 
+R2 -> lambda   { R2.tipo = vacio} 
+.......................................................................................................
+U -> ! V'                    {if(V.tipo == logico) U.tipo = logico else U.tipo = error}
+U -> V                        {U.tipo = V.tipo}
+.......................................................................................................
+V -> ( E )                     {V.tipo = E.tipo}
+V -> id V2                      {pos = buscaIdTS(id)                                                  
+                                 if(pos == NULL) {
+                                    insertTipoTSG(id.pos, ent)
+                                    insertDespTSG(id.pos, despG)
+                                    despG += 1
+                                 }
+                                 idTipo = buscaTipoTS(pos)
+                                 if(idTipo == fun){
+                                    if(V2.tipo == vacio) V2.tipo =  tipo_error
+                                    else{
+                                        tipoParam = buscaTipoParamTSG(id.pos)
+                                        numParam = buscaNumParamTSG(id.pos)
+                                        tipoRet = buscaTipoRetTSG(id.pos)
+                                        if(V2.numParam == numParam && V2.tipoParam == tipoParam){
+                                            V.tipo = tipoRet
+                                        }
+                                    } 
+                                 }
+                                 else {V.tipo  = id.tipo}
+                                }
+.......................................................................................................
+S2 -> = E ;     { S2.tipo = E.tipo }
+S2 -> ( L ) ;   { S2.tipo = fun
+                  S2.numParam = L.numParam
+                  S2.tipoParam = L.tipoParam}
+S2 -> += E ;    { S2.tipo = E.tipo}
+---------------------------------------------------------------------------------------
+V2 -> lambda                     {V2.tipoParam = vacio, V2.numParam = 0}
+
+V2  -> ( L )                      {V2.tipoParam = L.tipoParam
+                                 V2.numParam  = L.numParam}       
+---------------------------------------------------------------------------------------
+ F -> function id  H {insertarNParamTSG(F1.idPos, F2.numParam),
+                     {zonaDecl = true}
+                     {TSL = crearTSL(), TSactual = TSL, funActual = id, despL = 0
+                         insertarTipoTSG(id.pos, fun), insertarEtiqTSG(id.pos, nuevaEtiq())}
+                     {F1.tipoRet = H.tipo, insertarTipoRetTSG(id.pos, H.tipo), F1.idPos = id.pos}
+
+ ( A )               insertarTipoParamTSG(F1.idPos, F2.tipoParam)}
+                     {if(P.tipo != vacio) {F2.numParam = P.numParam, F2.tipoParam = P.tipoParam}
+                     else {F2.numParam = 0, F2.tipoParam = P.tipoParam}  
+                    zonaDecl = false}
+                    
+ { C }                 {if(F3.tipo == tipo_error) F.tipo = tipo_error
+                        else F.tipo = tipo_ok
+                            destruirTSL()}
+                        {F3.tipo = C.tipo 
+                        F3.tipoRet = C.tipoRet}
+.......................................................................................................
+L -> E Q         { if(Q.tipo == vacio) 
+                       L.tipoParam = E.tipo
+                       L.numParam = 1
+                   else
+                       L.tipoParam = E.tipo X Q.tipoParam // ??
+                       L.numParam = Q.numParam + 1
+                  }
+L -> lambda       { L.tipo = vacio }   
+.......................................................................................................
+Q -> , E Q''    { if(Q.tipo == vacio) 
+                    Q.tipoParam = E.tipo
+                    Q.numParam = 1
+                  else
+                    Q.tipoParam = E.tipo X Q''.tipoParam
+                    Q.numParam = Q''.numParam + 1
+                }
+Q -> lambda     { Q.tipo = vacio }
+.......................................................................................................
+H -> T                          {H.tipo = T.tipo}
+H -> lambda                     {H.tipo = vacio}
+.......................................................................................................
+A -> T id K                   {insertarTipoTSL(id.pos, T.tipo), insertarDespTSL(id.pos, despL), despL+=T.ancho
+                                 if(K.tipo == vacio) {A.tipo = T.tipo, A.numParam = 1}
+                                 else {P.tipoParam = T.tipo X K.tipoParam, A.numParam = K.numParam + 1}
+                                }   
+A -> lambda                     {A.tipo = vacio}
+.......................................................................................................
+K -> , T id K''                {insertarTipoTSL(id.pos, T.tipo), insertarDespTSL(id.pos, despL), despL+=T.ancho
+                                 if(K.tipo = vacio) {K.tipoParam = T.tipo, K.numParam = 1}
+                                 else {K.tipoParam = T.tipo X K''.tipoParam,K.numParam = K''.numParam + 1}
+                                }
+K -> lambda                    {K.tipo = vacio}
+.......................................................................................................
+X -> E          {X.tipo = E.tipo}
+X -> lambda     {X.tipo = vacio}
