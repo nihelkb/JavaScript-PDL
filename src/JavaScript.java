@@ -31,6 +31,14 @@ public class JavaScript {
     private static int posicionGlobal = 0;
     private static boolean tablaG = true;
 
+//  Types
+    private static final String vacio = "vacio";
+    private static final String ok = "tipo_ok";
+    private static final String error = "tipo_error";
+    private static final String fun = "fun";
+    private static final String logico = "logico";
+    private static final String ent = "ent";
+    private static final String cad = "cad";
 
 //  RD/WR FILE ATRIBUTES
     private static Reader reader;
@@ -148,7 +156,7 @@ public class JavaScript {
                             }else{
                                 contenido = mapaTSL.containsKey(cad);
                             }
-                            if(contenido){
+                            if(contenido){ // si ya esta contenido
                                 int pos;
                                 if(tablaG){
                                     pos = mapaTSG.get(cad);
@@ -156,15 +164,42 @@ public class JavaScript {
                                     pos = mapaTSL.get(cad);
                                 }
                                 token = GenToken(25, pos, "identificador " + cad);
+                                GenError(5, cad);
+                            }else{ // no esta contenido
+                                List <Object> atributos = new ArrayList<Object>();
+                                atributos.add(0, cad); // lexema
+                                atributos.add(1, "");  // tipo
+                                atributos.add(2, cad); // desplazamiento
+                                atributos.add(3, "");  // num parametros
+                                List <Object> tipoParam = new ArrayList<Object>();
+                                atributos.add(4, tipoParam); // tipo de parametros 
+                                atributos.add(5, cad); // Tipo devuelto
+                                atributos.add(6, cad); // Etiqueta
+                                int pos;
+                                if(tablaG){
+                                    pos = tablaSimGlobal.size();
+                                    mapaTSG.put(cad, pos);
+                                    tablaSimGlobal.add(atributos);
+    
+                                }else{
+                                    pos = tablaSimLocal.size();
+                                    mapaTSL.put(cad, pos);
+                                    tablaSimLocal.add(atributos);
+                                }
+                                token = GenToken(25, pos, "identificador " + cad);
                             }
                         }else{
-                            
+                            if(!mapaTSG.containsKey(cad) && !mapaTSL.containsKey(cad) ){
+                                token = GenToken(25, 0, "identificador " + cad);
+                                GenError(9, cad);
+                            }else{
+                                if(mapaTSG.containsKey(cad)){
+                                    token = GenToken(25, mapaTSG.get(cad), "identificador " + cad);
+                                }else{
+                                    token = GenToken(25, mapaTSL.get(cad), "identificador " + cad);
+                                }
+                            }
                         }
-                        
-                        if(!symbolsTable.contains(cad)){
-                            symbolsTable.add(cad);
-                        } 
-                        token = GenToken(25, symbolsTable.indexOf(cad), "identificador " + cad);
                     }
                     rdNext = false;
                     break;
@@ -210,48 +245,74 @@ public class JavaScript {
         }
     }
 
-    private static void E(){
+    private static String E(){
         writer.writeParse("1");
-        R();
-        E2();    
+        String tipoR = R();
+        String tipoE2 = E2();
+        if(tipoR.equals(ent) && tipoE2.equals(logico)){
+            return logico;
+        }else{
+            return tipoR;
+        }    
     }
 
-    private static void E2(){
+    private static String E2(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 22){ // <
                 writer.writeParse("2"); 
                 equipara(22); // <
-                R();
-                E2();
+                String tipoR = R();
+                String tipoE2 = E2();
+                if(tipoR.equals(ent) && (tipoE2.equals(logico) || tipoE2.equals(vacio))){
+                    return logico;
+                }else{
+                    return error;
+                }
             }else if(id == 13 || id == 16 || id == 17 ){ // ) ; ,
                 writer.writeParse("3");
+                return vacio;
             }else{
                 GenError(7, tokensStrings[22] + "' | '" + tokensStrings[13] + "' | '" + tokensStrings[16] + "' | '" + tokensStrings[17]);
+                return error;
             }
+        }
+        return ok;
+    }
+
+    private static String R(){
+        writer.writeParse("4");
+        String tipoU = U();
+        String tipoR2 = R2();    
+        if(tipoR2.equals(ent) && tipoU.equals(ent)){
+            return ent;
+        }else{
+            return tipoU;
         }
     }
 
-    private static void R(){
-        writer.writeParse("4");
-        U();
-        R2();    
-    }
-
-    private static void R2(){
+    private static String R2(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 20){ // *
                 writer.writeParse("5");
                 equipara(20); // *
-                U();
-                R2();
+                String tipoU = U();
+                String tipoR2 = R2();
+                if(tipoU.equals(ent) && (tipoR2.equals(ent) || tipoR2.equals(vacio))){
+                    return ent;
+                }else{
+                    return error;
+                }
             }else if(id == 22 || id == 13 || id == 16 || id == 17){ // < ) ; ,
                 writer.writeParse("6");
+                return vacio;
             }else{
                 GenError(7, tokensStrings[20] + "'| '" + tokensStrings[22] + "' | '" + tokensStrings[13] + "' | '" + tokensStrings[16] + "' | '" + tokensStrings[17]);
+                return error;
             }            
-        }  
+        }
+        return ok;  
     }
 
     private static void U(){
@@ -310,7 +371,7 @@ public class JavaScript {
         }
     }
 
-    private static void S(){
+    private static String S(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 25){ // id
@@ -320,8 +381,13 @@ public class JavaScript {
             }else if(id == 10){ // print
                 writer.writeParse("16");
                 equipara(10); // print
-                E();
+                String tipoE = E();
                 equipara(16); // ;
+                if(tipoE.equals(cad) || tipoE.equals(ent)){
+                    return ok;
+                }else{
+                    return error;
+                }
             }else if(id == 11){ // input
                 writer.writeParse("17");
                 equipara(11); // input
@@ -416,28 +482,43 @@ public class JavaScript {
         }
     }
 
-    private static void B(){
+    private static String B(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 5){ // if
                 writer.writeParse("28");
                 equipara(5); // if
                 equipara(12); // parIzzq
-                E();
-                equipara(13); // parDer
-                S();
+                String tipoE = E();
+                if(!tipoE.equals(logico)){
+                    GenError(10, "");
+                    equipara(13); // parDer
+                    S();
+                    return error;
+                }else{
+                    equipara(13); // parDer
+                    String tipoS = S();
+                    return tipoS.split(" ")[0];
+                }     
             }
             else if(id == 1){ // let
                 writer.writeParse("29");
+                zonaDeclaracion = true;
                 equipara(1);  // let
                 equipara(25); // id
-                T();
+                String[] tipoT = T().split(" ");
+                int pos = (Integer)sigToken.getValue();
                 equipara(16); // punto y coma
+                zonaDeclaracion = false;
+                if(tablaG){
+
+                }
             }
             else if(id == 25 || id == 9 || id == 10 || id == 11){ // id print input return 
                 writer.writeParse("30");
                 //equipara(3); // string
-                S();
+                String tipoS = S();
+                return tipoS;
             }
             else if(id == 6){// do
                 writer.writeParse("31");
@@ -446,9 +527,10 @@ public class JavaScript {
                 if(sigToken != null){
                     //System.out.println(sigToken);
                     id = sigToken.getID();
+                    String tipoC;
                     while(id == 5 || id == 1 || id == 6 || id == 25 || id == 10 || id == 11 || id == 9){ // if let do id print input return
                         //System.out.println("entro");
-                        C();
+                        tipoC = C();
                         if(sigToken == null){
                             break;
                         }
@@ -457,7 +539,10 @@ public class JavaScript {
                     equipara(15); // llaveDer
                     equipara(7);  // while
                     equipara(12); // parIzq
-                    E();
+                    String tipoE = E();
+                    if(!tipoE.equals(logico)){
+                        GenError(id, "");
+                    }
                     equipara(13); // parDer
                     equipara(16); 
                 }
@@ -468,23 +553,27 @@ public class JavaScript {
         }
     }
 
-    private static void T(){
+    private static String T(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 2){ // int 
                 writer.writeParse("32");
                 equipara(2); // int
+                return (ent + " 1");
             }
             else if(id == 4){ // boolean
                 writer.writeParse("33");
                 equipara(4);  // boolean
+                return (logico + " 1");
             }
             else if(id == 3){ // string
                 writer.writeParse("34");
                 equipara(3); // string
+                return (cad + " 64");
             }
             else{
                 GenError(7, tokensStrings[2]+"' | '"+tokensStrings[4]+"' | '" + tokensStrings[3]);
+                return error + " 0";
             }
         }
     }
@@ -574,40 +663,67 @@ public class JavaScript {
         }
     }
 
-    private static void C(){
+    private static String C(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 5 || id == 1 || id == 6 || id == 25 || id == 10 || id == 11 || id == 9){ // if let do id print input  return
                 writer.writeParse("42");
-                B();
-                C();
+                String tipoB = B();
+                if(tipoB.equals(error)){
+                    C();
+                    return error;
+                }
+                String tipoC = C();
+                if(tipoC.equals(vacio)){
+                    return ok;
+                }else{
+                    return tipoC;
+                }
             }
             else if(id == 15){ // llaveDer
                 writer.writeParse("43");
+                return vacio;
             }   
             else{
                 GenError(7, tokensStrings[5] + "' | '" + tokensStrings[1] + "' | '" + tokensStrings[6] + "' | '" + tokensStrings[25] + "' | '" + tokensStrings[10] + "' | '" + tokensStrings[11] + "' | '" + tokensStrings[9] + "' | '" + tokensStrings[15]);
+                return error;
             }
         }
+        return ok;
     }
     
-    private static void P(){
+    private static String P(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 5 || id == 1 || id == 6 || id == 25 || id == 10 || id == 11 || id == 9){ // if let do id print input return
                 writer.writeParse("44");
-                B();
-                P();
+                String tipoB = B();
+                String tipoP = P();
+                if(tipoB.equals(vacio)){
+                    return tipoP;
+                }
+                if(tipoB.equals(vacio) || tipoP.equals(error)){
+                    return error;
+                }
             }else if(id == 8){ // function
                 writer.writeParse("45");
-                F();
-                P();
+                String tipoF = F();
+                String tipoP = P();
+                if(tipoF.equals(vacio)){
+                    return tipoP;
+                }
+                if(tipoF.equals(vacio) || tipoP.equals(error)){
+                    return error;
+                }
             }else if( id == 65535){ // EOF $
                 writer.writeParse("46");
+                return vacio;
+                
             }else{
                 GenError(7, tokensStrings[5] + "' | '" + tokensStrings[1] + "' | '" + tokensStrings[6] + "' | '" + tokensStrings[25] + "' | '" + tokensStrings[10] + "' | '" + tokensStrings[11] + "' | '" + tokensStrings[9] + "' | '" + tokensStrings[8] + "' | $ (EOF)" );
             }
         }
+        return ok;
     }
 
 
@@ -653,7 +769,7 @@ public class JavaScript {
                 errorState = true;
                 break;
             case 5:
-                writer.writeError("Error léxico (5): Línea " + line + ": Ya existe el identificador " + data + ". Elija otro nombre.\n");
+                writer.writeError("Error Semántico (5): Línea " + line + ": Ya existe el identificador " + data + ". Elija otro nombre.\n");
                 errorState = true;
                 break;
             case 6:
@@ -664,8 +780,16 @@ public class JavaScript {
                 writer.writeError("Error sintáctico (7): Línea " + line + ": Se ha encontrado '" + tokensStrings[numero] + "' y se esperaba uno de estos tokens: '" + data + "'\n");
                 errorState = true;
                 break;
-             case 8:
+            case 8:
                 writer.writeError("Error sintáctico (8): Línea " + line + ": Se ha encontrado '" + tokensStrings[numero] + "' y se esperaba el fin de fichero.\n");
+                errorState = true;
+                break;
+            case 9:
+                writer.writeError("Error semántico (9): Línea " + line + ": El identificador '" + data + "' no está declarado.\n");
+                errorState = true;
+                break;
+            case 10:
+                writer.writeError("Error semántico (10): Línea " + line + ": La expresión debe ser de tipo lógico.\n");
                 errorState = true;
                 break;
             
@@ -708,6 +832,9 @@ public class JavaScript {
         fillKeywords();
         //while((t = LexicAnalizer()) != null && t.getID() != EOF );
         SyntaticAnalizer();
+       // System.out.println(mapaTSG.toString());
+        //System.out.println(mapaTSL.toString());
+
         GenTS();
         destroyTS();
         reader.close();
