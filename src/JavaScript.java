@@ -27,9 +27,12 @@ public class JavaScript {
     private static Map<String,Integer> mapaTSL = new HashMap<String,Integer>();
     private static List<Object> tablasLocal = new ArrayList<Object>();
     private static boolean zonaDeclaracion = false;
-    private static int posicionLocal = 0;
-    private static int posicionGlobal = 0;
+    private static int desplLocal = 0;
+    private static int desplGlobal = 0;
     private static boolean tablaG = true;
+    private static int contadorFunciones = 0;
+    private static int funcionAct = 0;    
+    
 
 //  Types
     private static final String vacio = "vacio";
@@ -315,35 +318,63 @@ public class JavaScript {
         return ok;  
     }
 
-    private static void U(){
+    private static String U(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 21){ // !
                 writer.writeParse("7");
                 equipara(21); // !
-                V();
+                String tipoV = V();
+                if(tipoV.equals(logico)){
+                    return logico;
+                }
             }else if(id == 25 || id == 12 || id == 24 || id == 23){ // id ( ent cad
                 writer.writeParse("8");
-                V();
+                String tipoV = V();
+                return tipoV;
             }else{
                 GenError(7, tokensStrings[21] + "' | '" + tokensStrings[25] + "' | '" + tokensStrings[12] + "' | '" + tokensStrings[24] + "' | '" + tokensStrings[23]);
+                return error;
             }
         }
+        return ok;
     }
 
-    private static void V(){
+    private static String V(){
+        int pos;
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 25){ // id
                 writer.writeParse("9");
                 equipara(25); // id
-                V2();
+                String tipoV2 = V2();
+                pos = buscoIdTS(cad);
+                if(pos == -1){
+                    List<Object> lista = new ArrayList<Object>();
+                    insertartipoTSG(pos,ent);
+                    insertarDesplazaTSG(pos,posicionGlobal);
+                    posicionGlobal++;
+                }
+                String tipoId = buscaTipoTS(pos);
+                if(tipoId.equals(fun)){
+                    if(tipoV2.equals(vacio)){
+                        return error;
+                    }
+                    String tipoParam = buscaTipoParametro(pos);
+                    int numeroParam = buscaNumParametros(pos);
+                    String tipo = buscaTipoTSG(pos);
+                    if(numParametros== nunmeroParam && tipoParametro.equals(tipoParam)){
+                        return tipo;
+                    }
+                    return tipoId;
+                }
             }else if(id == 12){ // ( 
                 writer.writeParse("10");
                 equipara(12); // (
-                E();
+                String tipoE = E();
                 equipara(13); // )
-            }else if(id == 24){ // ent
+                return tipoE;
+            }else if(id == 24){ // ent**********
                 writer.writeParse("11");
                 equipara(24); // ent
             }else if(id == 23){ // cad
@@ -351,11 +382,13 @@ public class JavaScript {
                 equipara(23); // cad
             }else{
                 GenError(7, tokensStrings[25] + "' | '" + tokensStrings[12] + "' | '" + tokensStrings[24] + "' | '" + tokensStrings[23]);
+                return error;
             }
         }
+        return ok;
     }
     
-    private static void V2(){
+    private static String V2(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 12){ // (
@@ -363,21 +396,73 @@ public class JavaScript {
                 equipara(12); // (
                 L();
                 equipara(13); // )
+               ****************** tipoParametro = tipoParametro;
+                numParametros = numParametros;
             }else if(id == 20 || id == 22 || id == 13 || id == 16 || id == 17){ // * < ) ; ,
                 writer.writeParse("14");
+                tipoParametro = vacio;
+                numParametros = 0;
             }else{
                 GenError(7, tokensStrings[12] + "' | '" + tokensStrings[20] + "' | '" + tokensStrings[22] + "' | '" + tokensStrings[13] + "' | '" + tokensStrings[16] + "' | '" + tokensStrings[17]);
             }
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static String S(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 25){ // id
                 writer.writeParse("15");
+                int pos = (int)sigToken.getValue();
+                int existe = buscoIdTS(cad);
                 equipara(25); // id
-                S2();
+                if(existe == -1){
+                    ArrayList<Object> atribs = new ArrayList<Object>(); 
+                    atribs.add(cad); // Lexema
+                    atribs.add(ent); //  Tipo
+                    atribs.add(desplGlobal); // Desplazamiento
+                    desplGlobal++;
+                    atribs.add(""); //  Num param
+                    atribs.add(new ArrayList<Object>()); //  lista param
+                    atribs.add(""); //  tipo retorno
+                    atribs.add(""); // etiqueta
+                    tablaSimGlobal.add(atribs);
+                    pos = tablaSimGlobal.size() - 1;
+                    mapaTSG.put(cad, pos);
+                }
+                String tipo;
+                if(mapaTSG.containsKey(cad)){
+                    tipo = (String)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(1);
+                }else{
+                    tipo = (String)((ArrayList<Object>)tablaSimLocal.get(pos)).get(1);
+                }
+                String [] tipoN = S2();
+                if(tipoN.length == 1){
+                    return error;
+                }else if(tipo.equals(fun)){
+                    String numeroParam;
+                    ArrayList<String> tipoParam;
+                    if(mapaTSG.containsKey(cad)){
+                        numeroParam = (String)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(3);
+                        tipoParam = (ArrayList<String>)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(4);
+                    }else{
+                        numeroParam = (String)((ArrayList<Object>)tablaSimLocal.get(pos)).get(3);
+                        tipoParam = (ArrayList<String>)((ArrayList<Object>)tablaSimLocal.get(pos)).get(4);
+                    }
+                    boolean coincidenParam = tipoN[2].equals(numeroParam);      // Se reciben el mismo numero de param que se requieren 
+                    for(int i = 3; i < tipoN.length && coincidenParam; i++){
+                        coincidenParam = tipoN[i].equals(tipoParam.get(i-3));   // Los tipos son correctos incluido el orden
+                    }
+                    if(coincidenParam){
+                        return ok;
+                    }else{
+                        GenError(11, "");
+                        return error;
+                    }        
+                }else if(tipoN[0].equals(tipo)){
+                    return ok;
+                }
             }else if(id == 10){ // print
                 writer.writeParse("16");
                 equipara(10); // print
@@ -386,100 +471,169 @@ public class JavaScript {
                 if(tipoE.equals(cad) || tipoE.equals(ent)){
                     return ok;
                 }else{
+                    GenError(12, "");
                     return error;
                 }
             }else if(id == 11){ // input
                 writer.writeParse("17");
                 equipara(11); // input
+                int pos = (int)sigToken.getValue();
+                int existe = buscoIdTS(cad);
                 equipara(25); // id
+                if(existe == -1){
+                    ArrayList<Object> atribs = new ArrayList<Object>(); 
+                    atribs.add(cad); // Lexema
+                    atribs.add(ent); //  Tipo
+                    atribs.add(desplGlobal); // Desplazamiento
+                    desplGlobal++;
+                    atribs.add(""); //  Num param
+                    atribs.add(new ArrayList<Object>()); //  lista param
+                    atribs.add(""); //  tipo retorno
+                    atribs.add(""); // etiqueta
+                    tablaSimGlobal.add(atribs);
+                    pos = tablaSimGlobal.size() - 1;
+                    mapaTSG.put(cad, pos);
+                }
+                String tipo;
+                if(mapaTSG.containsKey(cad)){
+                    tipo = (String)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(1);
+                }else{
+                    tipo = (String)((ArrayList<Object>)tablaSimLocal.get(pos)).get(1);
+                }
                 equipara(16); // ;
+                if(tipo.equals(cad) || tipo.equals(ent)){
+                    return ok;
+                }else{
+                    GenError(12, "");
+                    return error;
+                }
             }else if(id == 9){ // return
                 writer.writeParse("18");
                 equipara(9); // return
-                X();
+                String tipoX = X();
                 equipara(16); // ;
+                if(!tablaG){
+                    String tipoRetorno = (String)((ArrayList<Object>)tablaSimGlobal.get(funcionAct)).get(5);
+                    String tipos;
+                    if(tipoRetorno.equals(tipoX)){
+                        tipos = ok + " " + tipoRetorno;
+                    }else{
+                        tipos = error + " " + error;
+                    }
+                    return tipos;
+                }else{
+                    return error + " " + error;
+                }
             }else{
                 GenError(7, tokensStrings[25] + "' | '" + tokensStrings[10] + "' | '" + tokensStrings[11] + "' | '" + tokensStrings[9]);
+                return error;
             }
         }
+        return ok;
     }
     
-    private static void S2(){
+    private static String S2(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 18){ // =
                 writer.writeParse("19");
                 equipara(18); // =
-                E();
+                String tipoE = E();
                 equipara(16); // ;
+                return tipoE;
             }else if(id == 12){ // (
                 writer.writeParse("20");
                 equipara(12); // (
                 L();
                 equipara(13); // )
                 equipara(16); // ;
+                //num
+                //tipo
+                return fun;
+                
             }else if(id == 19){ // +=
                 writer.writeParse("21");
                 equipara(19); // +=
-                E();
+                String tipoE = E();
                 equipara(16); // ;
+                return tipoE;
             }else{
                 GenError(7, tokensStrings[18] + "' | '" + tokensStrings[12] + "' | '" + tokensStrings[19]);
+                return error;
             }
         }
+        return ok;
     }
 
-    // JULIO 14
-
-    private static void L(){
+    private static String L(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 21 || id == 25 || id == 12 || id == 24 || id == 23){ // ! id ( ent cad
                 writer.writeParse("22");
                 E();
-                Q();
+              String tipoQ = Q();
+              if(tipoQ.equals(vacio)){
+                    ///
+              }
+              else{
+
+              }
             }
             else if(id == 13){ // )
                 writer.writeParse("23");
+                return vacio;
             }
             else{
                 GenError(7, tokensStrings[12]+"' | '"+tokensStrings[13]+"' | '" + tokensStrings[21]+"' | '"+tokensStrings[23]+"' | '"+ tokensStrings[24]+"' | '"+tokensStrings[25]);
+                return error;
             }
         }
+        return ok;
     }
     
-    private static void Q (){
+    private static String Q(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 17){ //Coma
                 writer.writeParse("24");
                 equipara(17); // Coma
                 E();
-                Q();
-            }
-            else if(id == 13){ // )
+                String tipoQ = Q();
+                if(tipoQ.equals(vacio)){
+
+                }
+                else{
+
+                }
+            }else if(id == 13){ // )
                 writer.writeParse("25");
-            }
-            else{
+                return vacio;
+            }else{
                 GenError(7, tokensStrings[17]+"' | '"+tokensStrings[13]);
+                return error;
             }
         } 
+        return ok;
     }
 
-    private static void X(){
+    private static String X(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 21 || id == 25 || id == 12 || id == 23 || id == 24){ /// ! id ( ent cad
                 writer.writeParse("26"); 
-                E();
+                String tipoE = E();
+                return tipoE;
             }
             else if(id == 16){ //Punto y coma
                 writer.writeParse("27");
+                return vacio;
             }
             else{
                 GenError(0, tokensStrings[21]+"' | '"+tokensStrings[25]+"' | '" + tokensStrings[12]+"' | '"+tokensStrings[23]+"' | '"+ tokensStrings[24]+"' | '"+tokensStrings[16]);
+                return error;
             }
         }
+        return ok;
     }
 
     private static String B(){
@@ -500,57 +654,59 @@ public class JavaScript {
                     String tipoS = S();
                     return tipoS.split(" ")[0];
                 }     
-            }
-            else if(id == 1){ // let
+            }else if(id == 1){ // let
                 writer.writeParse("29");
                 zonaDeclaracion = true;
                 equipara(1);  // let
+                int pos = (int)sigToken.getValue(); // posicion en tabla de simbolos
                 equipara(25); // id
-                String[] tipoT = T().split(" ");
-                int pos = (Integer)sigToken.getValue();
-                equipara(16); // punto y coma
                 zonaDeclaracion = false;
+                String[] tipoT = T().split(" ");
+                equipara(16); // punto y coma
                 if(tablaG){
-
+                    insertarTipoTS(pos, tipoT[0], tablaSimGlobal);
+                    insertarDespTS(pos, desplGlobal, tablaSimGlobal);
+                    desplGlobal = desplGlobal + Integer.parseInt(tipoT[1]);
+                }else{
+                    insertarTipoTS(pos, tipoT[0], tablaSimLocal);
+                    insertarDespTS(pos, desplLocal, tablaSimLocal);
+                    desplLocal = desplLocal + Integer.parseInt(tipoT[1]);
                 }
-            }
-            else if(id == 25 || id == 9 || id == 10 || id == 11){ // id print input return 
+                return ok;
+            }else if(id == 25 || id == 9 || id == 10 || id == 11){ // id print input return 
                 writer.writeParse("30");
                 //equipara(3); // string
                 String tipoS = S();
                 return tipoS;
-            }
-            else if(id == 6){// do
+            }else if(id == 6){// do
                 writer.writeParse("31");
                 equipara(6); // do
                 equipara(14); // llaveizq
                 if(sigToken != null){
                     //System.out.println(sigToken);
                     id = sigToken.getID();
-                    String tipoC;
-                    while(id == 5 || id == 1 || id == 6 || id == 25 || id == 10 || id == 11 || id == 9){ // if let do id print input return
-                        //System.out.println("entro");
-                        tipoC = C();
-                        if(sigToken == null){
-                            break;
-                        }
-                        id = sigToken.getID();
-                    }
+                    //System.out.println("entro");
+                    String tipoC = C();
                     equipara(15); // llaveDer
                     equipara(7);  // while
                     equipara(12); // parIzq
                     String tipoE = E();
                     if(!tipoE.equals(logico)){
-                        GenError(id, "");
+                        equipara(13); // parDer
+                        equipara(16); // ;
+                        GenError(10, "");
+                        return error;
                     }
                     equipara(13); // parDer
                     equipara(16); 
+                    return tipoC;
                 }
-            }
-            else{
+            }else{
                 GenError(7, tokensStrings[5]+"' | '"+tokensStrings[1]+"' | '" + tokensStrings[25]+"' | '"+tokensStrings[9]+"' | '"+ tokensStrings[10]+"' | '"+tokensStrings[11]+"' | '"+tokensStrings[6]);
+                return error;
             }
         }
+        return ok;
     }
 
     private static String T(){
@@ -559,23 +715,28 @@ public class JavaScript {
             if(id == 2){ // int 
                 writer.writeParse("32");
                 equipara(2); // int
-                return (ent + " 1");
+                String tipos = ent + " 1";
+                return tipos;
             }
             else if(id == 4){ // boolean
                 writer.writeParse("33");
                 equipara(4);  // boolean
-                return (logico + " 1");
+                String tipos = logico + " 1";
+                return tipos;
             }
             else if(id == 3){ // string
                 writer.writeParse("34");
                 equipara(3); // string
-                return (cad + " 64");
+                String tipos = cad + " 64";
+                return tipos;
             }
             else{
                 GenError(7, tokensStrings[2]+"' | '"+tokensStrings[4]+"' | '" + tokensStrings[3]);
-                return error + " 0";
-            }
+                String tipos = error + " 0";
+                return tipos;
+             }
         }
+        return ok;
     }
 
     private static void F(){
@@ -610,41 +771,58 @@ public class JavaScript {
         }
     }
 
-    private static void H(){
+    private static String H(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 2 || id == 3 || id == 4){// int boolean string
                 writer.writeParse("36");
-                T();
-            }
-            else if(id == 12){ // parIzq
+                String tipoT = T();
+                return tipoT;
+            }else if(id == 12){ // parIzq
                 writer.writeParse("37");
-            }   
-            else{
+                return vacio;
+            }else{
                 GenError(7,tokensStrings[2]+"' | '"+tokensStrings[3]+"' | '" + tokensStrings[4]+"' | '"+tokensStrings[12]);
+                return error;
             }
         }
+        return ok;
     }
 
-     private static void A(){
+    private static String A(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 2 || id == 3 || id == 4){ // int boolean string
                 writer.writeParse("38");
-                T();
+                String tipoT = T();
                 equipara(25); // id
-                K();
+                String tipoK = K();
+                int pos;
+                pos = mapaTSL.get(id);
+                insertarTipoTSL(pos,tipoT);
+                insertarDesplazTSL(pos,posicionLocal);
+                posicionLocal++;
+                if(tipoK.equals(vacio)){
+                    return tipoT;
+                    ///num param 1
+                }
+                else{
+                    ///////////////
+                }
             }
             else if(id == 13){ // parDer
                 writer.writeParse("39");
+                return vacio;
             }   
             else{
                 GenError(7, tokensStrings[2]+"' | '"+tokensStrings[3]+"' | '" + tokensStrings[4]+"' | '"+tokensStrings[13]);
+                return error;
             }
         }
+        return ok;
     }
 
-    private static void K(){
+    private static String K(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 17){ // coma
@@ -652,15 +830,27 @@ public class JavaScript {
                 equipara(17); // coma
                 T();
                 equipara(25); // id
-                K();
+                String tipoK = K();
+                pos = mapaTSL.get(id);
+                insertarTipoTSL(pos,tipoT);
+                inserdesplazTSL(pos,posicionLocal);
+                if(tipoK.equals(vacio)){
+
+                }
+                else{
+
+                }
             }
             else if(id == 13){ // parDer
                 writer.writeParse("41");
+                return vacio;
             }   
             else{
                 GenError(7, tokensStrings[17]+"' | '"+tokensStrings[13]);
+                return error;
             }
         }
+        return ok;
     }
 
     private static String C(){
@@ -726,9 +916,75 @@ public class JavaScript {
         return ok;
     }
 
-
 //  AUXILIAR FUNCTIONS
 
+    private static int buscoIdTS(String id){
+        int pos = -1;
+        if(tablaG){
+             if(mapaTSG.containsKey(id)){
+                pos = mapaTSG.get(id);
+            }
+        }
+        else{ 
+             if(mapaTSL.containsKey(id) || mapaTSG.containsKey(id)){
+                 pos = mapaTSL.get(id);
+            }
+        }
+        return pos;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void insertarTipoTS(int pos, String tipo,  List<Object> lista){
+        ArrayList<Object> listaAtributos = (ArrayList<Object>)lista.get(pos);
+        listaAtributos.set(1,tipo);
+        lista.set(pos, listaAtributos);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void insertarDespTS(int pos, int desp,  List<Object> lista){
+        ArrayList<Object> listaAtributos = (ArrayList<Object>)lista.get(pos);
+        listaAtributos.set(2,desp);
+        lista.set(pos, listaAtributos);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void insertarNumParamTS(int pos, int param){
+        ArrayList<Object> listaAtributos = (ArrayList<Object>)tablaSimGlobal.get(pos);
+        listaAtributos.set(3,param);
+        tablaSimGlobal.set(pos, listaAtributos);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void insertarTipoParamTS(int pos,  List<String> lista){
+        ArrayList<Object> listaAtributos = (ArrayList<Object>)tablaSimGlobal.get(pos);
+        ArrayList<Object> listaParametros = (ArrayList<Object>)listaAtributos.get(4);
+        for(int i = 2; i<lista.size();i++){
+            listaParametros.add(lista.get(i));
+        }
+        listaAtributos.set(4,listaParametros);
+        tablaSimGlobal.set(pos,listaAtributos);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void insertarTipoRetTS(int pos, String ret){
+        ArrayList<Object> listaAtributos = (ArrayList<Object>)tablaSimGlobal.get(pos);
+        listaAtributos.set(5, ret);
+        tablaSimGlobal.set(pos, listaAtributos);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void insertarEtiquetaTS(int pos, String etiqueta){
+        ArrayList<Object> listaAtributos = (ArrayList<Object>)tablaSimGlobal.get(pos);
+        listaAtributos.set(6, etiqueta);
+        tablaSimGlobal.set(pos, listaAtributos);
+    }
+
+    private static String nuevaEtiquetaTS(){
+        String nombre = "EtFun";
+        nombre = nombre + contadorFunciones;
+        return nombre;
+    }
+    
     private static Token GenToken(Integer id, Object value, String comment){
         Token token = new Token(id, value);
         writer.writeToken(token.toString() + "  // token " + comment + "\n");
@@ -792,7 +1048,14 @@ public class JavaScript {
                 writer.writeError("Error semántico (10): Línea " + line + ": La expresión debe ser de tipo lógico.\n");
                 errorState = true;
                 break;
-            
+            case 11:
+                writer.writeError("Error semántico (11): Línea " + line + ": Deben coincidir tanto el número de parámetros dados como su tipo.\n");
+                errorState = true;
+                break;
+            case 12:
+                writer.writeError("Error semántico (12): Línea " + line + ": La expresión debe ser de tipo cadena o de tipo entero.\n");
+                errorState = true;
+                break;
         }
     }
 
