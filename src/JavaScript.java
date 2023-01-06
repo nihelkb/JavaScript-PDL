@@ -1103,7 +1103,7 @@ public class JavaScript {
         reader.close();
         writer.close();
         if(errorState){
-            System.out.println("Se han producido errores. Consulte el fichero errors.txt para encontrar los detalles.");
+            System.out.println("Se han producido errores. Consulte el fichero 'errors.txt' para encontrar los detalles.");
         }else{
             System.out.println("Todo bien jiji");
         }
