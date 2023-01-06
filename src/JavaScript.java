@@ -26,6 +26,7 @@ public class JavaScript {
     private static Map<String,Integer> mapaTSG = new HashMap<String,Integer>();
     private static Map<String,Integer> mapaTSL = new HashMap<String,Integer>();
     private static List<Object> tablasLocal = new ArrayList<Object>();
+    private static List<Object> nombreLocales = new ArrayList<Object>();
     private static boolean zonaDeclaracion = false;
     private static int desplLocal = 0;
     private static int desplGlobal = 0;
@@ -739,36 +740,69 @@ public class JavaScript {
         return ok;
     }
 
-    private static void F(){
+    private static String F(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 8){ // function
                 writer.writeParse("35");
+                zonaDeclaracion = true;
                 equipara(8); // function
-                equipara(25); // id
-                H();
-                equipara(12); // (
-                A();
-                equipara(13); // )
-                equipara(14); // {
-                if(sigToken != null){
-                    //System.out.println(sigToken);
-                    id = sigToken.getID();
-                    //System.out.println(id);
-                    while(id == 5 || id == 1 || id == 6 || id == 25 || id == 10 || id == 11 || id == 9){ // if let do id print input return
-                        //System.out.println("entro");
-                        C();
-                        if(sigToken == null){
-                            break;
-                        }
-                        id = sigToken.getID();
-                    }
+                if(sigToken.getValue() == null){
+                    GenError(13, "");
+                    equipara(25); // id
+                    H();
+                    equipara(12); // (
+                    A();
+                    equipara(13); // )
+                    equipara(14); // {
+                    C();
                     equipara(15); // }
+                    return error;
+                }
+                funcionAct = (int)sigToken.getValue();  // guardamos la posicion de ts para saber que funcion utilizamos
+                nombreLocales.add(cad);                 // nombre identificador de funcion
+                equipara(25);  // id
+                tablaG = false;  // desactivamos tabla global
+                // Inicializamos valores nueva tabla local
+                tablaSimLocal = new ArrayList<Object>();
+                mapaTSL = new HashMap<String,Integer>();
+                desplLocal = 0;
+                insertarTipoTS(funcionAct, fun, tablaSimGlobal);
+                String tipoH = H();
+                insertarTipoRetTS(funcionAct, tipoH);
+                String etiq = nuevaEtiquetaTS();
+                insertarEtiquetaTS(funcionAct, etiq);
+                contadorFunciones++;
+                // Parametros
+                equipara(12); // (
+                String tipoA = A();
+                equipara(13); // )
+                zonaDeclaracion = false;
+                String[] tiposA = tipoA.split(" ");
+                if(tiposA[0].equals(error)){
+                    equipara(14); // {
+                    C();
+                    equipara(15); // }
+                    return error;
+                } 
+                insertarNumParamTS(funcionAct, Integer.parseInt(tiposA[1]));
+                insertarTipoParamTS(funcionAct, tiposA);
+                equipara(14); // {
+                String tipoC = C();  
+                equipara(15); // }
+                tablaG = true;
+                tablasLocal.add(tablaSimLocal);
+                if(tipoC.equals(error)){
+                    return error;
+                }else{
+                    return ok;
                 }
             }else{
                 GenError(7, tokensStrings[8]+"' | '"+tokensStrings[5]+"' | '" + tokensStrings[1]+"' | '"+tokensStrings[66]+"' | '"+ tokensStrings[10]+"' | '"+tokensStrings[25]+"' | '"+tokensStrings[11]+"' | '"+tokensStrings[9]);
+                return error;
             }
         }
+        return ok;
     }
 
     private static String H(){
@@ -955,11 +989,11 @@ public class JavaScript {
     }
 
     @SuppressWarnings("unchecked")
-    private static void insertarTipoParamTS(int pos,  List<String> lista){
+    private static void insertarTipoParamTS(int pos,  String[] lista){
         ArrayList<Object> listaAtributos = (ArrayList<Object>)tablaSimGlobal.get(pos);
         ArrayList<Object> listaParametros = (ArrayList<Object>)listaAtributos.get(4);
-        for(int i = 2; i<lista.size();i++){
-            listaParametros.add(lista.get(i));
+        for(int i = 2; i<lista.length;i++){
+            listaParametros.add(lista[i]);
         }
         listaAtributos.set(4,listaParametros);
         tablaSimGlobal.set(pos,listaAtributos);
@@ -1054,6 +1088,10 @@ public class JavaScript {
                 break;
             case 12:
                 writer.writeError("Error semántico (12): Línea " + line + ": La expresión debe ser de tipo cadena o de tipo entero.\n");
+                errorState = true;
+                break;
+            case 13:
+                writer.writeError("Error semántico (13): Línea " + line + ": No se ha definido un nombre para la función.\n");
                 errorState = true;
                 break;
         }
