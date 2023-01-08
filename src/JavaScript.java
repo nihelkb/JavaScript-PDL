@@ -55,6 +55,7 @@ public class JavaScript {
     private static final int FAILURE = 1;
     private static final int EOF = 65535;
     private static String lexema = "";
+    
     public static Token LexicAnalizer(){
     //  Lexic analizer atributes
         int actualState = 0;        // Always starts at initial state 0
@@ -278,9 +279,10 @@ public class JavaScript {
                 equipara(22); // <
                 String tipoR = R();
                 String tipoE2 = E2();
-                if(tipoR.equals(ent) && (tipoE2.equals(logico) || tipoE2.equals(vacio))){
+                if(tipoR.equals(ent) && (tipoE2.equals(ent) || tipoE2.equals(vacio))){
                     return logico;
                 }else{
+                    GenError(15, ""); // ambos tipo entero
                     return error;
                 }
             }else if(id == 13 || id == 16 || id == 17 ){ // ) ; ,
@@ -316,6 +318,7 @@ public class JavaScript {
                 if(tipoU.equals(ent) && (tipoR2.equals(ent) || tipoR2.equals(vacio))){
                     return ent;
                 }else{
+                    GenError(15, "");
                     return error;
                 }
             }else if(id == 22 || id == 13 || id == 16 || id == 17){ // < ) ; ,
@@ -339,8 +342,7 @@ public class JavaScript {
                 System.out.println(tipoV+"aaaaaaaaaaaaaaaaaaaaaaaaaaa");
                 if(tipoV.equals(logico)){
                     return logico;
-                }
-                else{
+                }else{
                     GenError(10, "");
                     return error;
                 }
@@ -358,37 +360,35 @@ public class JavaScript {
     
     @SuppressWarnings("unchecked")
     private static String V(){
-        int pos;
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 25){ // id
                 writer.writeParse("9");
-                pos = (Integer)(sigToken.getValue());
+                int pos = (Integer)(sigToken.getValue());
                 equipara(25); // id
-                int posEx = buscoIdTS(lexema);
-                if(posEx == -1){
+                int posEx = buscoIdTS(lexema); // 0 si existe, -1 si no
+                if(posEx == -1){ 
                     List<Object> lista = new ArrayList<Object>();
-                    lista.add(0,lexema);
-                    lista.add(1,ent);
+                    lista.add(0, lexema);
+                    lista.add(1, ent);
                     lista.add(2, desplGlobal);
                     desplGlobal++;
-                    lista.add(3,"");
-                    lista.add(4,new ArrayList<String>());
-                    lista.add(5,"");
-                    lista.add(6,"");
+                    lista.add(3, "");
+                    lista.add(4, new ArrayList<String>());
+                    lista.add(5, "");
+                    lista.add(6, "");
                     tablaSimGlobal.add(lista);
-                    pos =tablaSimGlobal.size()-1;
+                    pos = tablaSimGlobal.size() - 1;
                     mapaTSG.put(lexema,pos);
                 }
                 String tipoId;
-                boolean existe =mapaTSG.containsKey(lexema);
+                boolean existe = mapaTSG.containsKey(lexema);
                 if(existe){
                     tipoId = (String)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(1);
-                }
-                else{
+                }else{
                     tipoId = (String)((ArrayList<Object>)tablaSimLocal.get(pos)).get(1);
                 }
-                String [] tipoV2 = V2().split(" ");
+                String[] tipoV2 = V2().split(" ");
                 System.out.println(mapaTSG);
                 System.out.println(mapaTSL);
                 System.out.println(tablaSimLocal);
@@ -404,19 +404,17 @@ public class JavaScript {
                         if(existe){
                             System.out.println(tablaSimGlobal+"aaaaa");
                             tipoParametro = (ArrayList<String>)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(4);
-                            int numeroParametrosTabla =(Integer)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(3);
+                            int numeroParametrosTabla = (Integer)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(3);
                             numeroParametros = Integer.toString(numeroParametrosTabla);
                             tipoDevuelto = (String)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(5);
-                        }
-                        else{
-                            
+                        }else{
                             tipoParametro = (ArrayList<String>)((ArrayList<Object>)tablaSimLocal.get(pos)).get(4);
                             numeroParametros = (String)((ArrayList<Object>)tablaSimLocal.get(pos)).get(3);
                             tipoDevuelto = (String)((ArrayList<Object>)tablaSimLocal.get(pos)).get(5);
                         }
-                        int i = 2;
                         boolean parametros = tipoV2[1].equals(numeroParametros);
-                        while(i<tipoV2.length && parametros ){
+                        int i = 2;
+                        while(i < tipoV2.length && parametros ){
                             if(!(tipoV2[i].equals(tipoParametro.get(i-2)))){
                                 parametros = false;
                             }
@@ -424,11 +422,12 @@ public class JavaScript {
                         }
                         if(parametros){
                             return tipoDevuelto;
-                        }
-                        GenError(11, " "); // POR COMPLETAR         
+                        }else{
+                            GenError(11, " "); 
+                            return error;
+                        }          
                     }
                 }else{
-                    
                     return tipoId;
                 }
             }else if(id == 12){ // ( 
@@ -441,9 +440,9 @@ public class JavaScript {
                 writer.writeParse("11");
                 equipara(24); // ent
                 return ent;
-            }else if(id == 23){ // lexema
+            }else if(id == 23){ // cad
                 writer.writeParse("12");
-                equipara(23); // lexema
+                equipara(23); // cad
                 return cadena;
             }else{
                 GenError(7, tokensStrings[25] + "' | '" + tokensStrings[12] + "' | '" + tokensStrings[24] + "' | '" + tokensStrings[23]);
@@ -459,9 +458,9 @@ public class JavaScript {
             if(id == 12){ // (
                 writer.writeParse("13");
                 equipara(12); // (
-                String l = L();
+                String tipoL = L();
                 equipara(13); // )
-                return l;
+                return tipoL;
             }else if(id == 20 || id == 22 || id == 13 || id == 16 || id == 17){ // * < ) ; ,
                 writer.writeParse("14");
                 return vacio + " 0";
@@ -648,18 +647,16 @@ public class JavaScript {
                 String tipoE = E();
                 String[] devueltoQ = Q().split(" ");
                 if(devueltoQ[0].equals(vacio)){
-                        return "tipo_ok 1"+ tipoE;
-                }
-                else{
-                    devueltoQ[1] = ""+ (Integer.parseInt(devueltoQ[1])+1);
-                        return  String.join(" ", devueltoQ)+ " "+tipoE;
+                    return "tipo_ok 1 "+ tipoE;
+                }else{
+                    devueltoQ[1] = "" + (Integer.parseInt(devueltoQ[1]) + 1);
+                    return String.join(" ", devueltoQ) + " " + tipoE;
                 }
             }
             else if(id == 13){ // )
                 writer.writeParse("23");
                 return vacio + " 0";
-            }
-            else{
+            }else{
                 GenError(7, tokensStrings[12]+"' | '"+tokensStrings[13]+"' | '" + tokensStrings[21]+"' | '"+tokensStrings[23]+"' | '"+ tokensStrings[24]+"' | '"+tokensStrings[25]);
                 return error;
             }
@@ -676,11 +673,10 @@ public class JavaScript {
                 String tipoE = E();
                 String[] devueltoQ = Q().split(" ");
                 if(devueltoQ[0].equals(vacio)){
-                      return "tipo_ok 1"+ tipoE;
-                }
-                else{
-                    devueltoQ[1] = ""+ (Integer.parseInt(devueltoQ[1])+1);
-                    return  String.join(" ", devueltoQ)+ " "+tipoE;
+                    return "tipo_ok 1 " + tipoE;
+                }else{
+                    devueltoQ[1] = "" + (Integer.parseInt(devueltoQ[1]) + 1);
+                    return String.join(" ", devueltoQ) + " " + tipoE;
                 }
             }else if(id == 13){ // )
                 writer.writeParse("25");
@@ -701,12 +697,10 @@ public class JavaScript {
                 writer.writeParse("26"); 
                 String tipoE = E();
                 return tipoE;
-            }
-            else if(id == 16){ //Punto y coma
+            }else if(id == 16){ //Punto y coma
                 writer.writeParse("27");
                 return vacio;
-            }
-            else{
+            }else{
                 GenError(0, tokensStrings[21]+"' | '"+tokensStrings[25]+"' | '" + tokensStrings[12]+"' | '"+tokensStrings[23]+"' | '"+ tokensStrings[24]+"' | '"+tokensStrings[16]);
                 return error;
             }
@@ -730,17 +724,16 @@ public class JavaScript {
                 }else{
                     equipara(13); // parDer
                     String tipoS = S();
-                    return tipoS.split(" ")[0];
+                    return tipoS.split(" ")[0]; // devuelve tipo
                 }     
             }else if(id == 1){ // let
                 writer.writeParse("29");
                 zonaDeclaracion = true;
                 equipara(1);  // let
-                int pos = (int)sigToken.getValue(); // posicion en tabla de simbolos
+                int pos = (Integer)sigToken.getValue(); // posicion en tabla de simbolos
                 equipara(25); // id
                 zonaDeclaracion = false;
                 String[] tipoT = T().split(" ");
-                equipara(16); // punto y coma
                 if(tablaG){
                     insertarTipoTS(pos, tipoT[0], tablaSimGlobal);
                     insertarDespTS(pos, desplGlobal, tablaSimGlobal);
@@ -750,17 +743,17 @@ public class JavaScript {
                     insertarDespTS(pos, desplLocal, tablaSimLocal);
                     desplLocal = desplLocal + Integer.parseInt(tipoT[1]);
                 }
+                equipara(16); // punto y coma
                 return ok;
             }else if(id == 25 || id == 9 || id == 10 || id == 11){ // id print input return 
                 writer.writeParse("30");
-                //equipara(3); // string
                 String tipoS = S();
                 return tipoS;
             }else if(id == 6){// do
                 writer.writeParse("31");
                 equipara(6); // do
                 equipara(14); // llaveizq
-                if(sigToken != null){
+                if(sigToken != null){              // ----------------------------------------
                     //System.out.println(sigToken);
                     id = sigToken.getID();
                     //System.out.println("entro");
@@ -772,12 +765,13 @@ public class JavaScript {
                     if(!tipoE.equals(logico)){
                         equipara(13); // parDer
                         equipara(16); // ;
-                        GenError(10, "");//
+                        GenError(10, "");
                         return error;
+                    }else{
+                        equipara(13); // parDer
+                        equipara(16); 
+                        return tipoC;
                     }
-                    equipara(13); // parDer
-                    equipara(16); 
-                    return tipoC;
                 }
             }else{
                 GenError(7, tokensStrings[5]+"' | '"+tokensStrings[1]+"' | '" + tokensStrings[25]+"' | '"+tokensStrings[9]+"' | '"+ tokensStrings[10]+"' | '"+tokensStrings[11]+"' | '"+tokensStrings[6]);
@@ -908,27 +902,23 @@ public class JavaScript {
             if(id == 2 || id == 3 || id == 4){ // int boolean string
                 writer.writeParse("38");
                 String[] devueltoT = T().split(" ");
-               // equipara(25); // id
                 int pos = (Integer)(sigToken.getValue());
                 equipara(25); // id
-                insertarTipoTS(pos,devueltoT[0],tablaSimLocal);
-                insertarDespTS(pos,desplLocal,tablaSimLocal);
+                insertarTipoTS(pos, devueltoT[0], tablaSimLocal);
+                insertarDespTS(pos, desplLocal, tablaSimLocal);
                 desplLocal = desplLocal + Integer.parseInt(devueltoT[1]);
                 String[] devueltoK = K().split(" ");
                 if(devueltoK[0].equals(vacio)){
                     System.out.println(Arrays.toString(devueltoT));
                     return "tipo_ok 1 " + devueltoT[0];
+                }else{
+                    devueltoK[1] = "" + (Integer.parseInt(devueltoK[1]) + 1);
+                    return String.join(" ", devueltoK) + " " + devueltoT[0];
                 }
-                else{
-                    devueltoK[1]=""+(Integer.parseInt(devueltoK[1])+1);
-                    return  String.join(" ", devueltoK)+ " "+devueltoT[0];
-                }
-            }
-            else if(id == 13){ // parDer
+            }else if(id == 13){ // parDer
                 writer.writeParse("39");
                 return vacio + " 0";
-            }   
-            else{
+            }else{
                 GenError(7, tokensStrings[2]+"' | '"+tokensStrings[3]+"' | '" + tokensStrings[4]+"' | '"+tokensStrings[13]);
                 return error;
             }
@@ -943,27 +933,25 @@ public class JavaScript {
                 writer.writeParse("40");
                 equipara(17); // coma
                 String[] devueltoT = T().split(" ");
-                int pos; // mirar q hace aqui pos del sig token
-                pos = (Integer)(sigToken.getValue());//****************************** */
+                // mirar q hace aqui pos del sig token
+                //int pos = (Integer)(sigToken.getValue());//****************************** */
                 equipara(25); // id
                 //pos = mapaTSL.get(lexema);
-                insertarTipoTS(tablaSimLocal.size()-1, devueltoT[0], tablaSimLocal); //*************** */
-                insertarDespTS(tablaSimLocal.size()-1, desplLocal, tablaSimLocal);
+                int pos = tablaSimLocal.size() - 1;
+                insertarTipoTS(pos, devueltoT[0], tablaSimLocal); //*************** */
+                insertarDespTS(pos, desplLocal, tablaSimLocal);
                 desplLocal = desplLocal + Integer.parseInt(devueltoT[1]);
                 String[] devueltoK = K().split(" ");
                 if(devueltoK[0].equals(vacio)){
                     return "tipo_ok 1 " + devueltoT[0];
+                }else{
+                    devueltoK[1] = "" + (Integer.parseInt(devueltoK[1]) + 1);
+                    return String.join(" ", devueltoK) + " " + devueltoT[0];
                 }
-                else{
-                    devueltoK[1]=""+(Integer.parseInt(devueltoK[1])+1);
-                    return  String.join(" ", devueltoK)+ " "+devueltoT[0];
-                }
-            }
-            else if(id == 13){ // parDer
+            }else if(id == 13){ // parDer
                 writer.writeParse("41");
-                return  vacio + " 0";
-            }   
-            else{
+                return vacio + " 0";
+            }else{
                 GenError(7, tokensStrings[17]+"' | '"+tokensStrings[13]);
                 return error;
             }
@@ -987,12 +975,10 @@ public class JavaScript {
                 }else{
                     return tipoC;
                 }
-            }
-            else if(id == 15){ // llaveDer
+            }else if(id == 15){ // llaveDer
                 writer.writeParse("43");
                 return vacio;
-            }   
-            else{
+            }else{
                 GenError(7, tokensStrings[5] + "' | '" + tokensStrings[1] + "' | '" + tokensStrings[6] + "' | '" + tokensStrings[25] + "' | '" + tokensStrings[10] + "' | '" + tokensStrings[11] + "' | '" + tokensStrings[9] + "' | '" + tokensStrings[15]);
                 return error;
             }
@@ -1005,12 +991,11 @@ public class JavaScript {
             int id = sigToken.getID();
             if(id == 5 || id == 1 || id == 6 || id == 25 || id == 10 || id == 11 || id == 9){ // if let do id print input return
                 writer.writeParse("44");
-                String tipoB = B();//
+                String tipoB = B();
                 String tipoP = P();
                 if(tipoB.equals(vacio)){
                     return tipoP;
-                }
-                if(tipoB.equals(vacio) || tipoP.equals(error)){
+                }else if(tipoB.equals(error) || tipoP.equals(error)){
                     return error;
                 }
             }else if(id == 8){ // function
@@ -1019,16 +1004,15 @@ public class JavaScript {
                 String tipoP = P();
                 if(tipoF.equals(vacio)){
                     return tipoP;
-                }
-                if(tipoF.equals(vacio) || tipoP.equals(error)){
+                }else if(tipoF.equals(error) || tipoP.equals(error)){
                     return error;
                 }
-            }else if( id == 65535){ // EOF $
+            }else if(id == 65535){ // EOF $
                 writer.writeParse("46");
                 return vacio;
-                
             }else{
                 GenError(7, tokensStrings[5] + "' | '" + tokensStrings[1] + "' | '" + tokensStrings[6] + "' | '" + tokensStrings[25] + "' | '" + tokensStrings[10] + "' | '" + tokensStrings[11] + "' | '" + tokensStrings[9] + "' | '" + tokensStrings[8] + "' | $ (EOF)" );
+                return error;
             }
         }
         return ok;
@@ -1042,8 +1026,7 @@ public class JavaScript {
              if(mapaTSG.containsKey(id)){
                 pos = 0;
             }
-        }
-        else{ 
+        }else{ 
              if(mapaTSL.containsKey(id) || mapaTSG.containsKey(id)){
                  pos = 0;
             }
@@ -1181,6 +1164,10 @@ public class JavaScript {
                 break;
             case 14:
                 writer.writeError("Error semántico (14): Línea " + line + ": La función no tiene definido un valor de retorno.\n");
+                errorState = true;
+                break;
+            case 15:
+                writer.writeError("Error semántico (15): Línea " + line + ": Ambos lados de la expresión deben de ser de tipo entero.\n");
                 errorState = true;
                 break;
     }
