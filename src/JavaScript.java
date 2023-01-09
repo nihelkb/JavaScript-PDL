@@ -185,17 +185,16 @@ public class JavaScript {
                                 atributos.add(0, lexema); // lexema
                                 atributos.add(1, "");  // tipo
                                 atributos.add(2, ""); // desplazamiento
-                                atributos.add(3, "");  // num parametros
-                                List <Object> tipoParam = new ArrayList<Object>();
-                                atributos.add(4, tipoParam); // tipo de parametros 
-                                atributos.add(5, ""); // Tipo devuelto
-                                atributos.add(6, ""); // Etiqueta
                                 int pos;
                                 if(tablaG){
+                                    atributos.add(3, "");  // num parametros
+                                    List <Object> tipoParam = new ArrayList<Object>();
+                                    atributos.add(4, tipoParam); // tipo de parametros 
+                                    atributos.add(5, ""); // Tipo devuelto
+                                    atributos.add(6, ""); // Etiqueta
                                     pos = tablaSimGlobal.size();
                                     mapaTSG.put(lexema, pos);
                                     tablaSimGlobal.add(atributos);
-    
                                 }else{
                                     System.out.println(tablaSimLocal);
                                     pos = tablaSimLocal.size();
