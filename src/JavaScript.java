@@ -282,18 +282,25 @@ public class JavaScript {
         }    
     }
 
+    @SuppressWarnings("unchecked")
     private static String E2(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 22){ // <
-                writer.writeParse("2"); 
+                writer.writeParse("2");
+                int pos = mapaTSG.get(lexema);
+                String tipoId = (String)((ArrayList<Object>)(tablaSimGlobal.get(pos))).get(1);
+                if(!tipoId.equals(ent)){
+                    GenError(25, "");
+                    return error;
+                } 
                 equipara(22); // <
                 String tipoR = R();
                 String tipoE2 = E2();
                 if(tipoR.equals(ent) && (tipoE2.equals(ent) || tipoE2.equals(vacio))){
                     return logico;
                 }else{
-                    GenError(15, ""); // ambos tipo entero
+                    GenError(25, ""); // ambos tipo entero
                     return error;
                 }
             }else if(id == 13 || id == 16 || id == 17 ){ // ) ; ,
@@ -318,18 +325,25 @@ public class JavaScript {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static String R2(){
         if(sigToken != null){
             int id = sigToken.getID();
             if(id == 20){ // *
                 writer.writeParse("5");
+                int pos = mapaTSG.get(lexema);
+                String tipoId = (String)((ArrayList<Object>)(tablaSimGlobal.get(pos))).get(1);
+                if(!tipoId.equals(ent)){
+                    GenError(27, "");
+                    return error;
+                } 
                 equipara(20); // *
                 String tipoU = U();
                 String tipoR2 = R2();
                 if(tipoU.equals(ent) && (tipoR2.equals(ent) || tipoR2.equals(vacio))){
                     return ent;
                 }else{
-                    GenError(15, "");
+                    GenError(27, "");
                     return error;
                 }
             }else if(id == 22 || id == 13 || id == 16 || id == 17){ // < ) ; ,
@@ -354,10 +368,10 @@ public class JavaScript {
                 if(tipoV.equals(logico)){
                     return logico;
                 }else{
-                    GenError(10, "");
+                    GenError(26, "");
                     return error;
                 }
-            }else if(id == 25 || id == 12 || id == 24 || id == 23){ // id ( ent lexema
+            }else if(id == 25 || id == 12 || id == 24 || id == 23){ // id ( ent cad
                 writer.writeParse("8");
                 String tipoV = V();
                 return tipoV;
@@ -379,7 +393,9 @@ public class JavaScript {
                 equipara(25); // id
                 int posEx = buscoIdTS(lexema); // 0 si existe, -1 si no
                 if(posEx == -1){ 
-                    List<Object> lista = new ArrayList<Object>();
+                    GenError(9, lexema);
+                    return error;
+                    /*List<Object> lista = new ArrayList<Object>();
                     lista.add(0, lexema);
                     lista.add(1, ent);
                     lista.add(2, desplGlobal);
@@ -390,7 +406,7 @@ public class JavaScript {
                     lista.add(6, "");
                     tablaSimGlobal.add(lista);
                     pos = tablaSimGlobal.size() - 1;
-                    mapaTSG.put(lexema,pos);
+                    mapaTSG.put(lexema,pos);*/
                 }
                 String tipoId;
                 boolean existe = mapaTSG.containsKey(lexema);
@@ -421,17 +437,26 @@ public class JavaScript {
                             tipoDevuelto = (String)((ArrayList<Object>)tablaSimLocal.get(pos)).get(5);
                         }
                         boolean parametros = tipoV2[1].equals(numeroParametros);
+                        //System.out.println("num param: " + tipoV2[1]);
+                        if(!parametros){
+                            GenError(28, numeroParametros);
+                            return error;
+                        }
                         int i = 2;
+                        String tipoFalla = "";
+                        String tipoDebe = "";
                         while(i < tipoV2.length && parametros ){
                             if(!(tipoV2[i].equals(tipoParametro.get(i-2)))){
                                 parametros = false;
+                                tipoFalla = tipoV2[i];
+                                tipoDebe = tipoParametro.get(i-2);
                             }
                             i++;
                         }
                         if(parametros){
                             return tipoDevuelto;
                         }else{
-                            GenError(11, " "); 
+                            GenError(11, tipoFalla + " " + tipoDebe); 
                             return error;
                         }          
                     }
@@ -515,6 +540,7 @@ public class JavaScript {
                     //System.out.println(mapaTSG);
                 }
                 String tipo;
+                System.out.println(lexema);
                 boolean posEx = mapaTSG.containsKey(lexema);
                 if(posEx){
                     tipo = (String)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(1);
@@ -523,11 +549,12 @@ public class JavaScript {
                     tipo = (String)((ArrayList<Object>)tablaSimLocal.get(pos)).get(1);
                 }
                 //System.out.println(lexema);
-                String tipoN = S2();
-                String[] tiposN = tipoN.split(" ");
-                if(tiposN.length == 1){
+                String tipoS2 = S2();
+               // System.out.println("tipoS2 " + tipoS2);
+                String[] tiposS2 = tipoS2.split(" ");
+                /*if(tiposS2.length == 1){
                     return error;
-                }else if(tipo.equals(fun)){
+                }else*/ if(tipo.equals(fun)){
                     String numeroParam;
                     ArrayList<String> tipoParam;
                     if(posEx){
@@ -539,18 +566,33 @@ public class JavaScript {
                         numeroParam = Integer.toString(numeroParametrosTabla);
                         tipoParam = (ArrayList<String>)((ArrayList<Object>)tablaSimLocal.get(pos)).get(4);
                     }
-                    boolean coincidenParam = tiposN[2].equals(numeroParam);      // Se reciben el mismo numero de param que se requieren 
-                    for(int i = 3; i < tiposN.length && coincidenParam; i++){
-                        coincidenParam = tiposN[i].equals(tipoParam.get(i-3));   // Los tipos son correctos incluido el orden
+                    boolean coincidenParam = tiposS2[2].equals(numeroParam);      // Se reciben el mismo numero de param que se requieren 
+                    //System.out.println(tiposS2[2]);
+                    if(!coincidenParam){
+                        GenError(28, numeroParam);
+                        return error;
+                    }
+                    String tipoFalla = "";
+                    String tipoDebe = "";
+                    for(int i = 3; i < tiposS2.length && coincidenParam; i++){
+                        coincidenParam = tiposS2[i].equals(tipoParam.get(i-3));   // Los tipos son correctos incluido el orden
+                        if(!coincidenParam){
+                            tipoFalla = tiposS2[i];
+                            tipoDebe = tipoParam.get(i-3);
+                        }
                     }
                     if(coincidenParam){
                         return ok;
                     }else{
-                        GenError(11, "");
+                        GenError(11, tipoFalla + " " + tipoDebe);
                         return error;
                     }        
-                }else if(tiposN[0].equals(tipo)){
+                }else if(tiposS2[0].equals(tipo)){
                     return ok;
+                }else{
+                    //System.out.println(tablaSimGlobal);
+                    GenError(23, tipo);
+                    return error;
                 }
             }else if(id == 10){ // print
                 writer.writeParse("16");
@@ -603,8 +645,8 @@ public class JavaScript {
                 if(!tablaG){
                     String tipoRetorno = (String)((ArrayList<Object>)tablaSimGlobal.get(funcionAct)).get(5);
                     String tipos;
-                    System.out.println("tipoX " + tipoX);
-                    System.out.println("tiporet " + tipoRetorno);
+                    //System.out.println("tipoX " + tipoX);
+                    //System.out.println("tiporet " + tipoRetorno);
                     if(tipoRetorno.equals(tipoX)){
                         tipos = ok + " " + tipoRetorno;
                     }else{
@@ -629,6 +671,7 @@ public class JavaScript {
         return ok;
     }
     
+    @SuppressWarnings("unchecked")
     private static String S2(){
         if(sigToken != null){
             int id = sigToken.getID();
@@ -636,6 +679,7 @@ public class JavaScript {
                 writer.writeParse("19");
                 equipara(18); // =
                 String tipoE = E();
+                //System.out.println("tipoE " +tipoE);
                 equipara(16); // ;
                 return tipoE;
             }else if(id == 12){ // (
@@ -645,11 +689,20 @@ public class JavaScript {
                 equipara(13); // )
                 equipara(16); // ;
                 return fun + " " + tipoL;
-                
             }else if(id == 19){ // +=
                 writer.writeParse("21");
+                int pos = mapaTSG.get(lexema);
+                String tipoId = (String)((ArrayList<Object>)(tablaSimGlobal.get(pos))).get(1);
+                if(!tipoId.equals(ent)){
+                    GenError(24, "");
+                    return error;
+                }
                 equipara(19); // +=
                 String tipoE = E();
+                if(!tipoE.equals(ent)){
+                    GenError(24, "");
+                    return error;
+                }
                 equipara(16); // ;
                 return tipoE;
             }else{
@@ -768,7 +821,9 @@ public class JavaScript {
                 return ok;
             }else if(id == 25 || id == 9 || id == 10 || id == 11){ // id print input return 
                 writer.writeParse("30");
+                //System.out.println(lexema);
                 String tipoS = S();
+               // System.out.println("S: " + tipoS + " " + lexema);
                 return tipoS;
             }else if(id == 6){// do
                 writer.writeParse("31");
@@ -883,7 +938,7 @@ public class JavaScript {
                 insertarTipoParamTS(funcionAct, tiposA);
                 equipara(14); // {
                 String tipoC = C();
-                System.out.println("tipoC fun "+ tipoC);  
+                //System.out.println("tipoC fun "+ tipoC);  
                 equipara(15); // }
                 tablaG = true;
                 tablasLocal.add(tablaSimLocal);
@@ -994,6 +1049,8 @@ public class JavaScript {
                 //System.out.println(tipoB);
                 if(tipoB.equals(error)){
                     C();
+                    //System.out.println(lexema);
+                   // System.out.println("entro: " + tipoC);
                     return error;
                 }
                 String tipoC = C();
@@ -1195,7 +1252,8 @@ public class JavaScript {
                 Terminar();
                 break;
             case 11:
-                writer.writeError("Error semántico (11): Línea " + line + ": Deben coincidir tanto el número de parámetros dados como su tipo.\n");
+                String[] datos = data.split(" ");
+                writer.writeError("Error semántico (11): Línea " + line + ": Se ha encontrado un parámetro de tipo " + datos[0] + " y se esperaba un parámetro de tipo "+ datos[1] + ".\n");
                 errorState = true;
                 Terminar();
                 break;
@@ -1220,7 +1278,7 @@ public class JavaScript {
                 Terminar();
                 break;
             case 16:
-                writer.writeError("Error léxico (16): Línea " + line + ": Para defenir las cadenas de caracteres use comillas simples en vez de dobles.\n");
+                writer.writeError("Error léxico (16): Línea " + line + ": Para definir las cadenas de caracteres use comillas simples en vez de dobles.\n");
                 errorState = true;
                 Terminar();
                 break;
@@ -1255,7 +1313,40 @@ public class JavaScript {
                 errorState = true;
                 Terminar();
                 break;
-                
+            case 23:
+                writer.writeError("Error semántico (23): Línea " + line + ": Ambos lados de la expresión deben de ser de tipo " + data + ".\n");
+                errorState = true;
+                Terminar();
+                break;  
+            case 24:
+                writer.writeError("Error semántico (24): Línea " + line + ": Los operadores aritméticos (+=) solo se aplican sobre tipos enteros.\n");
+                errorState = true;
+                Terminar();
+                break;
+            case 25:
+                writer.writeError("Error semántico (25): Línea " + line + ": Los operadores relacionales (<) solo se aplican sobre tipos enteros.\n");
+                errorState = true;
+                Terminar();
+                break;   
+            case 26:
+                writer.writeError("Error semántico (26): Línea " + line + ": Los operadores lógicos (!) solo se aplican sobre tipos lógicos.\n");
+                errorState = true;
+                Terminar();
+                break;
+            case 27:
+                writer.writeError("Error semántico (27): Línea " + line + ": Los operadores aritméticos (*) solo se aplican sobre tipos enteros.\n");
+                errorState = true;
+                Terminar();
+                break; 
+            case 28:
+                if(data.equals("1")){
+                    writer.writeError("Error semántico (28): Línea " + line + ": No coincide el número de parámetros de la función. Debería tener " + data +" parámetro.\n");
+                }else{
+                    writer.writeError("Error semántico (28): Línea " + line + ": No coincide el número de parámetros de la función. Debería tener " + data +" parámetros.\n");
+                }
+                errorState = true;
+                Terminar();
+                break; 
         }
 }
     private static void Terminar(){
@@ -1268,13 +1359,32 @@ public class JavaScript {
         System.exit(0);
     }
     
-    
+    @SuppressWarnings("unchecked")
     private static void GenTS(){
-        writer.writeTS("CONTENIDO DE LA TABLA DE SIMBOLOS #1 :\n");
+        writer.writeTS("CONTENIDO DE LA TABLA DE SIMBOLOS GLOBAL #1 :\n");
         writer.writeTS("\n");
-        for(int i = 0; i < symbolsTable.size(); i++){
-            writer.writeTS("* LEXEMA : '" + symbolsTable.get(i) + "'\n");
-            writer.writeTS("-----------------------------------------\n");
+        for(int i = 0; i < tablaSimGlobal.size(); i++){
+            List<Object> lista =(ArrayList<Object>)tablaSimGlobal.get(i);
+            writer.writeTS("* LEXEMA : '" + lista.get(0) + "'\n");
+            writer.writeTS("  ATRIBUTOS:\n");
+            writer.writeTS("+ tipo:\t'" + lista.get(1)+"'\n");
+            if(!(lista.get(2).equals(""))){
+                writer.writeTS("+ despl:\t" + lista.get(2) + "\n");
+            }
+            
+            if(!(lista.get(3).equals(""))){
+                writer.writeTS("+ numParam:\t"+lista.get(3) + "\n");
+                List<Object> tipos =(ArrayList<Object>)lista.get(4);
+                int contador = 1;
+        
+                for(int j = 0; j<tipos.size();j++){
+                     writer.writeTS("+ TipoParam" + contador + ":\t" + tipos.get(j) + "\n");
+                     contador++;
+                }
+                writer.writeTS("+ TipoRetorno:\t'" + lista.get(5)+"'\n");
+                writer.writeTS("+ EtiqFuncion:\t'" +lista.get(6)+"'\n");
+            }
+            writer.writeTS("--------- --------- \n");
         }
     }
 
@@ -1305,9 +1415,9 @@ public class JavaScript {
         fillKeywords();
         //while((t = LexicAnalizer()) != null && t.getID() != EOF );
         SyntaticAnalizer();
-        System.out.println(mapaTSG.toString());
-        System.out.println(mapaTSL.toString());
-        System.out.println(tablaSimGlobal.toString());
+        //System.out.println(mapaTSG.toString());
+        //System.out.println(mapaTSL.toString());
+        //System.out.println(tablaSimGlobal.toString());
         GenTS();
         destroyTS();
         reader.close();
