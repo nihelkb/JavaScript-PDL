@@ -540,7 +540,7 @@ public class JavaScript {
                     //System.out.println(mapaTSG);
                 }
                 String tipo;
-                System.out.println(lexema);
+                //System.out.println(lexema);
                 boolean posEx = mapaTSG.containsKey(lexema);
                 if(posEx){
                     tipo = (String)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(1);
