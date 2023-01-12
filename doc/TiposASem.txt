@@ -1,7 +1,7 @@
 Inicio -> {despl = 0, TSG = CrearTSG(), TSActual = TSG, zonaDecl = true} 
 P {DestruyeTS(TSG)}
 
-P->  B P''
+*P->  B P''
                  if(B.tipo == vacio)  P.tipo =  P''.tipo
                  else if(B.tipo == tipo_error || P''.tipo == tipo_error) P.tipo=tipo_error
                  else P.tipo = tipo_ok
@@ -10,7 +10,7 @@ P -> F P''     { if(F.tipo == vacio) P.tipo = P''.tipo
                 else P.tipo = tipo_ok }
 P -> lambda   { P.tipo = vacio}
 .......................................................................................................
-B -> if ( E ) { if(E.tipo != logico) error
+*B -> if ( E ) { if(E.tipo != logico) error
      S          else B.tipo = S.tipo } 
 B -> let id T ; 
         let zonaDecl= true
@@ -23,25 +23,25 @@ B -> let id T ;
             AñadeTipoLocal(id.pos,T.tipo)
             AñadeDespLocal(id.pos,despl)
             despl = despl + T.ancho
-B -> S         { B.tipo = S.tipo }
-B -> do { C }       { B.tipo = C.tipo 
+*B -> S         { B.tipo = S.tipo }
+*B -> do { C }       { B.tipo = C.tipo 
      while ( E ) ;    if(E.tipo != logico) error }
 .......................................................................................................
-C -> B C1       { if(B.tipo == tipo_error) error
+*C -> B C''      { if(B.tipo == tipo_error) error
                   if(C1.tipo == vacio) C.tipo = tipo_ok
                   else C.tipo = C1.tipo }
 C -> lambda     { C.tipo = vacio }
 .......................................................................................................
-T-> int         { T.tipo = int    T.ancho = 1 }
-T-> boolean     { T.tipo = boolean T.ancho = 1 }
-T-> string      { T.tipo = string  T.ancho = 64 }
+*T-> int         { T.tipo = ent    T.ancho = 1 }
+T-> boolean     { T.tipo = logico T.ancho = 1 }
+T-> string      { T.tipo = cad  T.ancho = 64 }
 .......................................................................................................
-E -> R E2
+*E -> R E2
                 if(R.tipo == ent && E2.tipo == logico) E.tipo = logico
                 else E.tipo = R.tipo
 
 .......................................................................................................
-S -> id S2      { pos = buscaIdTS(id)
+*S -> id S2      { pos = buscaIdTS(id)
                   if(pos == NULL){
                     insertTipoTSG(id.pos, ent)
                     insertDespTSG(id.pos, despG)
@@ -60,10 +60,10 @@ S -> id S2      { pos = buscaIdTS(id)
                   } 
                   else if(idTipo == S2.tipo) S.tipo = idTipo 
                  }
-S -> print E ;  { if(E.tipo == cad || E.tipo == ent)
+*S -> print E ;  { if(E.tipo == cad || E.tipo == ent)
                   S.tipo = tipo_ok 
                   else S.tipo = tipo_error }
-S -> input id ; { pos = buscaIdTS(id)                                                  
+*S -> input id ; { pos = buscaIdTS(id)                                                  
                   if(pos == NULL) {
                      insertTipoTSG(id.pos, ent)
                      insertDespTSG(id.pos, despG)
@@ -73,23 +73,25 @@ S -> input id ; { pos = buscaIdTS(id)
                   if(idTipo == cad || idTipo == ent) S.tipo = tipo_ok 
                   else S.tipo = tipo_error
                  }    
-S -> return X ; { if(TSL!= NULL){
+*S -> return X ; { if(TSL!= NULL){
                     tipoRet = buscaTipoRetTSG(funActual)
                     if(X.tipo == tipoRet) {S.tipo = tipo_ok, S.tipoRet = tipoRet}
                     else S.tipo = tipo_error, S.tipoRet = tipo_error
                 }
                 else S.tipo = tipo_ok, S.tipoRet = X.tipo} 
 .......................................................................................................
-E2-> < R E2' {if(R.tipo = ent && (E2.tipo = logico || E2.tipo == vacio)) E2.tipo = logico else error}                
+*E2-> < R E2' {if(R.tipo = ent && (E2.tipo = ent || E2.tipo == vacio)) E2.tipo = logico else error}                
 E2 -> lambda {E2.tipo = vacio}                
 .......................................................................................................
-R -> U R2      { if(R2.tipo == ent && U.tipo == ent) R.tipo = ent
+*R -> U R2      { if(R2.tipo == ent && U.tipo == ent) R.tipo = ent
                  else R.tipo = U.tipo }
 .......................................................................................................
-R2 -> * U R2'' { if(U.tipo == ent && (R2''.tipo == ent || R2''.tipo == vacio)) R2.tipo = ent else error} 
+*R2 -> * U R2'' { if(U.tipo == ent && (R2''.tipo == ent || R2''.tipo == vacio)) R2.tipo = ent else error} 
 R2 -> lambda   { R2.tipo = vacio} 
+
+JULIO****************************************************************************
 .......................................................................................................
-U -> ! V'                    {if(V.tipo == logico) U.tipo = logico else U.tipo = error}
+U -> ! V                    {if(V.tipo == logico) U.tipo = logico else U.tipo = error}
 U -> V                        {U.tipo = V.tipo}
 .......................................................................................................
 V -> ( E )                     {V.tipo = E.tipo}
