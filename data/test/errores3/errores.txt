@@ -1,2 +1,6 @@
-Error semántico (21): Linea 8 Se esperaba un tipo de dato 'ent' pero se encontró 'cad'
-Error sintáctico (13): Linea 10 Se esperaba un id pero se encontró entero
+Error semántico (23): Línea 9: Ambos lados de la expresión deben de ser de tipo cadena.
+Error semántico (20): Línea 15: El tipo de retorno (logico) no coincide con el definido en la función (entero).
+Error semántico (24): Línea 17: Los operadores aritméticos (+=) solo se aplican sobre tipos enteros.
+Error semántico (26): Línea 18: Los operadores lógicos (!) solo se aplican sobre tipos lógicos.
+Error semántico (12): Línea 18: La instrucción print solo evalua expresiones de tipo cadena o de tipo entero.
+Error semántico (23): Línea 19: Ambos lados de la expresión deben de ser de tipo entero.

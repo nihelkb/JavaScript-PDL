@@ -1,48 +1,53 @@
-<3,>
-<6,>
-<11,0>
-<21,>
-<3,>
-<5,>
-<11,1>
-<21,>
-<2,>
-<16,>
-<11,2>
-<14,>
-<12,0>
-<21,>
-<23,>
-<11,1>
-<21,>
-<11,2>
-<15,>
-<12,2>
-<17,>
-<18,>
-<9,>
-<16,>
-<11,2>
-<17,>
-<21,>
-<19,>
-<7,>
-<11,3>
-<16,>
-<17,>
-<18,>
-<9,>
-<16,>
-<13,"Introduce una palabra">
-<17,>
-<21,>
-<10,>
-<16,>
-<11,0>
-<17,>
-<21,>
-<19,>
-<11,3>
-<16,>
-<17,>
-<21,>
+<1, >  // token palabra reservada let
+<25,0>  // token identificador hola
+<3, >  // token palabra reservada string
+<16, >  // token puntoYcoma
+<25,0>  // token identificador hola
+<18, >  // token asign
+<23,"Hola Mundo">  // token cadena
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,1>  // token identificador exp
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,2>  // token identificador base
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,3>  // token identificador resu
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,4>  // token identificador i
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<25,2>  // token identificador base
+<18, >  // token asign
+<24,3>  // token constante entera
+<16, >  // token puntoYcoma
+<25,1>  // token identificador exp
+<18, >  // token asign
+<24,5>  // token constante entera
+<16, >  // token puntoYcoma
+<6, >  // token palabra reservada do
+<14, >  // token llaveIzq
+<25,3>  // token identificador resu
+<18, >  // token asign
+<25,2>  // token identificador base
+<20, >  // token mult
+<25,3>  // token identificador resu
+<16, >  // token puntoYcoma
+<15, >  // token llaveDrch
+<7, >  // token palabra reservada while
+<12, >  // token parIzq
+<25,4>  // token identificador i
+<22, >  // token menor
+<25,1>  // token identificador exp
+<13, >  // token parDrch
+<16, >  // token puntoYcoma
+<10, >  // token palabra reservada print
+<12, >  // token parIzq
+<25,0>  // token identificador hola
+<13, >  // token parDrch
+<16, >  // token puntoYcoma

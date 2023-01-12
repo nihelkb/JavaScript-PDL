@@ -1,90 +1,52 @@
-<3,>
-<4,>
-<11,0>
-<21,>
-<3,>
-<4,>
-<11,1>
-<21,>
-<3,>
-<4,>
-<11,2>
-<21,>
-<3,>
-<5,>
-<11,3>
-<21,>
-<9,>
-<16,>
-<13,"Introduce el primer operando">
-<17,>
-<21,>
-<10,>
-<16,>
-<11,0>
-<17,>
-<21,>
-<9,>
-<16,>
-<13,"Introduce el segundo operando">
-<17,>
-<21,>
-<10,>
-<16,>
-<11,1>
-<17,>
-<21,>
-<7,>
-<11,4>
-<4,>
-<16,>
-<4,>
-<11,5>
-<20,>
-<4,>
-<11,6>
-<17,>
-<18,>
-<3,>
-<4,>
-<11,7>
-<21,>
-<11,7>
-<14,>
-<12,88>
-<22,>
-<11,5>
-<22,>
-<11,6>
-<21,>
-<3,>
-<5,>
-<11,8>
-<14,>
-<11,7>
-<24,>
-<12,10>
-<21,>
-<11,3>
-<14,>
-<23,>
-<11,8>
-<21,>
-<8,>
-<11,7>
-<21,>
-<19,>
-<11,2>
-<14,>
-<11,4>
-<16,>
-<11,0>
-<20,>
-<11,1>
-<17,>
-<21,>
-<9,>
-<16,>
-<11,2>
-<17,>
-<21,>
+<1, >  // token palabra reservada let
+<25,0>  // token identificador aguacate
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,1>  // token identificador pomelo
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,2>  // token identificador pina
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,3>  // token identificador naranja
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,4>  // token identificador rica
+<4, >  // token palabra reservada boolean
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,5>  // token identificador ingredientes
+<3, >  // token palabra reservada string
+<16, >  // token puntoYcoma
+<25,5>  // token identificador ingredientes
+<18, >  // token asign
+<23,"aguacate, pomelo, pina, raranja">  // token cadena
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,6>  // token identificador macedonia
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<25,6>  // token identificador macedonia
+<18, >  // token asign
+<25,0>  // token identificador aguacate
+<20, >  // token mult
+<25,1>  // token identificador pomelo
+<20, >  // token mult
+<25,3>  // token identificador naranja
+<20, >  // token mult
+<25,2>  // token identificador pina
+<16, >  // token puntoYcoma
+<5, >  // token palabra reservada if
+<12, >  // token parIzq
+<25,6>  // token identificador macedonia
+<22, >  // token menor
+<24,626>  // token constante entera
+<13, >  // token parDrch
+<25,4>  // token identificador rica
+<18, >  // token asign
+<25,4>  // token identificador rica
+<16, >  // token puntoYcoma

@@ -1,6 +1,6 @@
-Error semántico (35): Linea 15 La función operacion debe devolver 'ent' pero se encontró 'log'
-Error semántico (44): Linea 16 Los dos tipos deben ser enteros pero son: 'log' y 'ent'
-Error semántico (29): Linea 17 Se esperaba un tipo de dato 'cad' pero se encontró un tipo erróneo
-Error semántico (45): Linea 17 El operador ! solo se puede usar con expresiones de tipo lógico pero se encontró una expresión de tipo 'cad'
-Error semántico (32): Linea 18 Se esperaba una expresion de tipo 'ent' o 'cad'
-Error sintáctico (12): Linea 18 Se esperaba un tipo de dato (int, boolean, string)
+Error semántico (12): Línea 6: La instrucción print solo evalua expresiones de tipo cadena o de tipo entero.
+Error semántico (10): Línea 9: La expresión debe ser de tipo lógico.
+Error semántico (31): Línea 15: La instrucción input solo evalua expresiones de tipo cadena o de tipo entero.
+Error semántico (30): Línea 17: La función 'pideTexto' debe tener retorno al no ser de tipo vacio.
+Error semántico (5): Línea 19: Ya existe el identificador pideTexto. Elija otro nombre.
+Error sintáctico (7): Línea 19: Se ha encontrado 'identificador (nombre de una variable o función)' y se esperaba uno de estos tokens: 'int' | 'string' | 'boolean' | ')'

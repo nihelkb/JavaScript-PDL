@@ -1,3 +1,4 @@
-Error semántico (32): Linea 5 Se esperaba una expresion de tipo 'ent' o 'cad' pero se encontró: 'log'
-Error semántico (26): Linea 6 Fallo en el segundo campo del bucle for: Se esperaba tipo logico
-Error léxico (2): Linea 12 Cadena de mas de 64 caracteres
+Error semántico (9): Línea 6: El identificador 'b1' no está declarado.
+Error semántico (12): Línea 6: La instrucción print solo evalua expresiones de tipo cadena o de tipo entero.
+Error semántico (10): Línea 9: La expresión debe ser de tipo lógico.
+Error léxico (2): Línea 17: Se ha superado el número máximo de caracteres: 64. Número actual de caracteres: 160

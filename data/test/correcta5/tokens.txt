@@ -1,68 +1,53 @@
-<3,>
-<4,>
-<11,0>
-<21,>
-<9,>
-<16,>
-<13,"introduzca el numero para hacer la resta factorial">
-<17,>
-<21,>
-<10,>
-<16,>
-<11,0>
-<17,>
-<21,>
-<7,>
-<11,1>
-<4,>
-<16,>
-<4,>
-<11,2>
-<17,>
-<18,>
-<1,>
-<16,>
-<11,2>
-<24,>
-<12,1>
-<17,>
-<8,>
-<12,0>
-<21,>
-<8,>
-<11,2>
-<22,>
-<11,1>
-<16,>
-<11,2>
-<22,>
-<12,1>
-<17,>
-<21,>
-<19,>
-<7,>
-<11,3>
-<16,>
-<4,>
-<11,4>
-<17,>
-<18,>
-<9,>
-<16,>
-<13,"el resultado de la resta factorial es: ">
-<17,>
-<21,>
-<9,>
-<16,>
-<11,4>
-<17,>
-<21,>
-<19,>
-<11,3>
-<16,>
-<11,1>
-<16,>
-<11,0>
-<17,>
-<17,>
-<21,>
+<1, >  // token palabra reservada let
+<25,0>  // token identificador cadena
+<3, >  // token palabra reservada string
+<16, >  // token puntoYcoma
+<25,0>  // token identificador cadena
+<18, >  // token asign
+<23,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa">  // token cadena
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,1>  // token identificador resu
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,2>  // token identificador a
+<4, >  // token palabra reservada boolean
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,3>  // token identificador i
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<25,3>  // token identificador i
+<18, >  // token asign
+<24,10>  // token constante entera
+<16, >  // token puntoYcoma
+<8, >  // token palabra reservada function
+<25,4>  // token identificador factorial
+<12, >  // token parIzq
+<2, >  // token palabra reservada int
+<25,0>  // token identificador x
+<13, >  // token parDrch
+<14, >  // token llaveIzq
+<6, >  // token palabra reservada do
+<14, >  // token llaveIzq
+<25,1>  // token identificador resu
+<18, >  // token asign
+<25,1>  // token identificador resu
+<20, >  // token mult
+<24,4444>  // token constante entera
+<16, >  // token puntoYcoma
+<15, >  // token llaveDrch
+<7, >  // token palabra reservada while
+<12, >  // token parIzq
+<25,3>  // token identificador i
+<22, >  // token menor
+<24,0>  // token constante entera
+<13, >  // token parDrch
+<16, >  // token puntoYcoma
+<15, >  // token llaveDrch
+<10, >  // token palabra reservada print
+<12, >  // token parIzq
+<25,1>  // token identificador resu
+<13, >  // token parDrch
+<16, >  // token puntoYcoma

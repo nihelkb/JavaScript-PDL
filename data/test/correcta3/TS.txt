@@ -1,40 +1,61 @@
-TABLA DE SIMBOLOS GLOBAL #1 :
+CONTENIDO DE LA TABLA DE SIMBOLOS GLOBAL #1 :
 
-* LEXEMA : 'x'
-  	Atributos :
-  		+ tipo: 'ent'
-  		+ despl: 0
-* LEXEMA : 'y'
-  	Atributos :
-  		+ tipo: 'ent'
-  		+ despl: 1
-* LEXEMA : 'resultado'
-  	Atributos :
-  		+ tipo: 'ent'
-  		+ despl: 2
-* LEXEMA : 'recogerCoordenadas'
-  	Atributos :
-  		+ tipo: 'func'
-  		+ TipoRetorno: 'ent'
-  		+ numParam: 0
-  		+ EtiqFuncion: 'EtiqFuncion1'
-* LEXEMA : 'i'
-  	Atributos :
-  		+ tipo: 'ent'
-  		+ despl: 3
-* LEXEMA : 'j'
-  	Atributos :
-  		+ tipo: 'ent'
-  		+ despl: 4
-* LEXEMA : 'res'
-  	Atributos :
-  		+ tipo: 'ent'
-  		+ despl: 5
------------------------------------------
-TABLA recogerCoordenadas #2 :
+* LEXEMA :		'barraPan'
+  ATRIBUTOS:
++ tipo:			'cadena'
++ despl:		0
+--------- --------- 
+* LEXEMA :		'aguacate'
+  ATRIBUTOS:
++ tipo:			'cadena'
++ despl:		64
+--------- --------- 
+* LEXEMA :		'pomelo'
+  ATRIBUTOS:
++ tipo:			'cadena'
++ despl:		128
+--------- --------- 
+* LEXEMA :		'amasado'
+  ATRIBUTOS:
++ tipo:			'logico'
++ despl:		192
+--------- --------- 
+* LEXEMA :		'amasador'
+  ATRIBUTOS:
++ tipo:			'funcion'
++ numParam:		2
++ TipoParam1:	'cadena'
++ TipoParam2:	'cadena'
++ TipoRetorno:	'vacio'
++ EtiqFuncion:	'EtFun1'
+--------- --------- 
+* LEXEMA :		'hornear'
+  ATRIBUTOS:
++ tipo:			'funcion'
++ numParam:		1
++ TipoParam1:	'cadena'
++ TipoRetorno:	'logico'
++ EtiqFuncion:	'EtFun2'
+--------- --------- 
+----------------------------------------- 
+CONTENIDO DE LA TABLA DE SIMBOLOS LOCAL DE LA FUNCION amasador #2 :
 
-* LEXEMA : 'res'
-  	Atributos :
-  		+ tipo: 'ent'
-  		+ despl: 0
------------------------------------------
+* LEXEMA : 'cosa'
+  ATRIBUTOS:
++ tipo:		'cadena'
++ despl:	0
+--------- --------- 
+* LEXEMA : 'cosa2'
+  ATRIBUTOS:
++ tipo:		'cadena'
++ despl:	64
+--------- --------- 
+----------------------------------------- 
+CONTENIDO DE LA TABLA DE SIMBOLOS LOCAL DE LA FUNCION hornear #3 :
+
+* LEXEMA : 'barraPan'
+  ATRIBUTOS:
++ tipo:		'cadena'
++ despl:	0
+--------- --------- 
+----------------------------------------- 

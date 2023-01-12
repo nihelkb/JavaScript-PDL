@@ -1,0 +1,1 @@
+Error semántico (11): Línea 3: Se ha encontrado un parámetro de tipo logico y se esperaba un parámetro de tipo entero.

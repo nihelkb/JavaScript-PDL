@@ -1,55 +1,40 @@
-<3,>
-<4,>
-<11,0>
-<21,>
-<3,>
-<4,>
-<11,1>
-<21,>
-<3,>
-<5,>
-<11,2>
-<21,>
-<11,0>
-<14,>
-<12,3>
-<21,>
-<11,1>
-<14,>
-<11,0>
-<21,>
-<3,>
-<5,>
-<11,3>
-<21,>
-<11,3>
-<14,>
-<11,0>
-<24,>
-<11,1>
-<21,>
-<1,>
-<16,>
-<11,3>
-<17,>
-<11,2>
-<14,>
-<23,>
-<11,2>
-<21,>
-<11,0>
-<14,>
-<11,0>
-<22,>
-<11,1>
-<21,>
-<9,>
-<16,>
-<11,0>
-<17,>
-<21,>
-<9,>
-<16,>
-<11,1>
-<17,>
-<21,>
+<1, >  // token palabra reservada let
+<25,0>  // token identificador base
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,1>  // token identificador altura
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<1, >  // token palabra reservada let
+<25,2>  // token identificador resultado
+<2, >  // token palabra reservada int
+<16, >  // token puntoYcoma
+<8, >  // token palabra reservada function
+<25,3>  // token identificador area
+<2, >  // token palabra reservada int
+<12, >  // token parIzq
+<2, >  // token palabra reservada int
+<25,0>  // token identificador x
+<17, >  // token coma
+<2, >  // token palabra reservada int
+<25,1>  // token identificador y
+<13, >  // token parDrch
+<14, >  // token llaveIzq
+<25,2>  // token identificador resultado
+<18, >  // token asign
+<25,0>  // token identificador base
+<20, >  // token mult
+<25,1>  // token identificador altura
+<16, >  // token puntoYcoma
+<9, >  // token palabra reservada return
+<25,2>  // token identificador resultado
+<16, >  // token puntoYcoma
+<15, >  // token llaveDrch
+<25,3>  // token identificador area
+<12, >  // token parIzq
+<24,2>  // token constante entera
+<17, >  // token coma
+<24,3>  // token constante entera
+<13, >  // token parDrch
+<16, >  // token puntoYcoma

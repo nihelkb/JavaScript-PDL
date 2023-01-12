@@ -1,35 +1,39 @@
-TABLA DE SIMBOLOS GLOBAL #1 :
+CONTENIDO DE LA TABLA DE SIMBOLOS GLOBAL #1 :
 
-* LEXEMA : 'n'
-  	Atributos :
-  		+ tipo: 'ent'
-  		+ despl: 0
-* LEXEMA : 'factorial'
-  	Atributos :
-  		+ tipo: 'func'
-  		+ TipoRetorno: 'ent'
-  		+ numParam: 1
-  		+ TipoParam1: 'ent'
-  		+ EtiqFuncion: 'EtiqFuncion1'
-* LEXEMA : 'imprimirResultado'
-  	Atributos :
-  		+ tipo: 'func'
-  		+ TipoRetorno: 'tipo_vacio'
-  		+ numParam: 1
-  		+ TipoParam1: 'ent'
-  		+ EtiqFuncion: 'EtiqFuncion2'
------------------------------------------
-TABLA factorial #2 :
+* LEXEMA :		'cadena'
+  ATRIBUTOS:
++ tipo:			'cadena'
++ despl:		0
+--------- --------- 
+* LEXEMA :		'resu'
+  ATRIBUTOS:
++ tipo:			'entero'
++ despl:		64
+--------- --------- 
+* LEXEMA :		'a'
+  ATRIBUTOS:
++ tipo:			'logico'
++ despl:		65
+--------- --------- 
+* LEXEMA :		'i'
+  ATRIBUTOS:
++ tipo:			'entero'
++ despl:		66
+--------- --------- 
+* LEXEMA :		'factorial'
+  ATRIBUTOS:
++ tipo:			'funcion'
++ numParam:		1
++ TipoParam1:	'entero'
++ TipoRetorno:	'vacio'
++ EtiqFuncion:	'EtFun1'
+--------- --------- 
+----------------------------------------- 
+CONTENIDO DE LA TABLA DE SIMBOLOS LOCAL DE LA FUNCION factorial #2 :
 
-* LEXEMA : 'n'
-  	Atributos :
-  		+ tipo: 'ent'
-  		+ despl: 0
------------------------------------------
-TABLA imprimirResultado #3 :
-
-* LEXEMA : 'n'
-  	Atributos :
-  		+ tipo: 'ent'
-  		+ despl: 0
------------------------------------------
+* LEXEMA : 'x'
+  ATRIBUTOS:
++ tipo:		'entero'
++ despl:	0
+--------- --------- 
+----------------------------------------- 

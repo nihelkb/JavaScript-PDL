@@ -1,1 +1,2 @@
-Error léxico (3): Linea 4 Entero fuera de rango, el numero es mayor de 32767
+Error semántico (29): Línea 4: El orden para declarar una variable es: let + identificador + tipo
+Error sintáctico (6): Línea 4: Se ha encontrado 'string' y se esperaba 'identificador (nombre de una variable o función)'
