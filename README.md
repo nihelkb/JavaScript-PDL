@@ -12,11 +12,11 @@ Autores:
 
     * Para ejecutar el procesador a través del ejecutable:
         1. Situarse en la raiz del proyecto, donde se encuentra el archivo JavaScript-PDL.jar
-        2. Ejecutar el mandato descrito en el apartado 'Uso', sustituyendo ``` terminal <input.txt> ``` por la ruta del archivo a procesar
+        2. Ejecutar el mandato descrito en el apartado 'Uso', sustituyendo `<input.txt> ` por la ruta del archivo a procesar
     * Para ejecutar el procesador a través de Makefile (necesario instalar la librería choco):
         1. Situarse en la raiz del proyecto y crear un archivo input.txt
-        2. Compilar:  ``` terminal make compile ```
-        3. Ejecutar:  ``` terminal make run fich=input.txt ```
+        2. Compilar:   `make compile`
+        3. Ejecutar:  ` make run fich=input.txt `
     Una vez ejecutado el procesador, se generarán los ficheros tokens.txt, parse.txt, ts.txt y errors.txt en la raiz. Si no aparecen, refrescar la carpeta.
 
 ## Árbol de directorios ##
