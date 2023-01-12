@@ -17,6 +17,7 @@ Autores:
     1. Situarse en la raiz del proyecto y crear un archivo input.txt
     2. Compilar:   `make compile`
     3. Ejecutar:  `make run fich=input.txt`
+    
 Una vez ejecutado el procesador, se generarán los ficheros tokens.txt, parse.txt, ts.txt y errors.txt en la raiz. Si no aparecen, refrescar la carpeta.
 
 ## Árbol de directorios ##
