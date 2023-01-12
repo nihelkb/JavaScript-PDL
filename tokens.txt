@@ -1,2 +1,0 @@
-<1, >  // token palabra reservada let
-<4, >  // token palabra reservada boolean
