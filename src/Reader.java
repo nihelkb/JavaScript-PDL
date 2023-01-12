@@ -14,7 +14,8 @@ public class Reader {
 
     public Reader(String file){
         try {
-            frd = new FileReader(ClassLoader.getSystemResource(file).getFile());
+            //frd = new FileReader(ClassLoader.getSystemResource(file).getFile());
+            frd = new FileReader(file);
             brd = new BufferedReader(frd);
         } catch (Exception e) {
             e.printStackTrace();
