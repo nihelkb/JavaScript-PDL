@@ -6,13 +6,13 @@ Autores:
 
 ## Uso ##
 
-``` terminal java -jar JavaScript-PDL.jar <input.txt> ```
+`java -jar JavaScript-PDL.jar <input.txt> `
 
 ### Información de uso: ###
 
     * Para ejecutar el procesador a través del ejecutable:
         1. Situarse en la raiz del proyecto, donde se encuentra el archivo JavaScript-PDL.jar
-        2. Ejecutar el mandato descrito en el apartado 'Uso', sustituyendo `<input.txt> ` por la ruta del archivo a procesar
+        2. Ejecutar el mandato descrito en el apartado 'Uso', sustituyendo `<input.txt>` por la ruta del archivo a procesar
     * Para ejecutar el procesador a través de Makefile (necesario instalar la librería choco):
         1. Situarse en la raiz del proyecto y crear un archivo input.txt
         2. Compilar:   `make compile`
