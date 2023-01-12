@@ -12,7 +12,6 @@ public class JavaScript {
     private static boolean errorState = false;
     private static int line = 1;   // It must have at least 1 line
     private static List<String> keywords;
-    private static List<String> symbolsTable;
     private static Token sigToken;
     private static String tokensStrings[] = {"$", "let", "int", "string", "boolean", "if", 
     "do", "while", "function", "return", "print", "input", "(", ")", "{","}",";",",",
@@ -200,10 +199,8 @@ public class JavaScript {
                         }else{
                             if(!mapaTSG.containsKey(lexema) && !mapaTSL.containsKey(lexema) ){
                                 int pos = tablaSimGlobal.size();
-                                //mapaTSG.put(lexema, pos);
                                 token = GenToken(25, pos, "identificador " + lexema);
                                 
-                                //GenError(9, lexema);
                             }else{
                                 if(mapaTSG.containsKey(lexema)){
                                     token = GenToken(25, mapaTSG.get(lexema), "identificador " + lexema);
@@ -283,24 +280,29 @@ public class JavaScript {
             int id = sigToken.getID();
             if(id == 22){ // <
                 writer.writeParse("2");
+                
                 int pos;
                 boolean ex;
                 String tipoId = "";
-                if(dentroFun){
-                    ex = mapaTSL.containsKey(lexema);
-                    if(ex){ // local
-                        pos = mapaTSL.get(lexema);
-                        tipoId = (String)((ArrayList<Object>)(tablaSimLocal.get(pos))).get(1);
+                if(!esConstEnt){
+                    if(dentroFun){
+                        ex = mapaTSL.containsKey(lexema);
+                        if(ex){ // local
+                            pos = mapaTSL.get(lexema);
+                            tipoId = (String)((ArrayList<Object>)(tablaSimLocal.get(pos))).get(1);
+                        }else{
+                            pos = mapaTSG.get(lexema);
+                            tipoId = (String)((ArrayList<Object>)(tablaSimGlobal.get(pos))).get(1);
+                        }
                     }else{
-                        pos = mapaTSG.get(lexema);
-                        tipoId = (String)((ArrayList<Object>)(tablaSimGlobal.get(pos))).get(1);
+                        ex = mapaTSG.containsKey(lexema);
+                        if(ex){
+                            pos = mapaTSG.get(lexema);
+                            tipoId = (String)((ArrayList<Object>)(tablaSimGlobal.get(pos))).get(1);
+                        }
                     }
                 }else{
-                    ex = mapaTSG.containsKey(lexema);
-                    if(ex){
-                        pos = mapaTSG.get(lexema);
-                        tipoId = (String)((ArrayList<Object>)(tablaSimGlobal.get(pos))).get(1);
-                    }
+                    tipoId = ent;
                 }
                 if(!tipoId.equals(ent) && !tipoId.equals("")){
                     GenError(25, "");
@@ -321,6 +323,7 @@ public class JavaScript {
                 if(tipoR.equals(ent) && (tipoE2.equals(ent) || tipoE2.equals(vacio))){
                     return logico;
                 }else{
+                    //System.out.println("error");
                     GenError(25, ""); // ambos tipo entero
                     return error;
                 }
@@ -361,8 +364,16 @@ public class JavaScript {
                             pos = mapaTSL.get(lexema);
                             tipoId = (String)((ArrayList<Object>)(tablaSimLocal.get(pos))).get(1);
                         }else{ // coge de global
+                            if(!mapaTSG.containsKey(lexema)){
+                                GenError(9,lexema);
+                                equipara(20); // *
+                                U();
+                                R2();
+                                return error;
+                            }
                             pos = mapaTSG.get(lexema);
                             tipoId = (String)((ArrayList<Object>)(tablaSimGlobal.get(pos))).get(1);
+                            
                         }
                     }else{
                         pos = mapaTSG.get(lexema);
@@ -458,10 +469,6 @@ public class JavaScript {
                 equipara(25); // id
                 String[] tipoV2 = V2(posEx).split(" ");
                 if(tipoId.equals(fun)){
-                    /*if(tipoV2[0].equals(vacio)){
-                        GenError(14, "");
-                        return error;
-                    }else{*/
                         List<String> tipoParametro;
                         String numeroParametros;
                         String tipoDevuelto;
@@ -491,7 +498,6 @@ public class JavaScript {
                             GenError(11, tipoFalla + " " + tipoDebe); 
                             return error;
                         }          
-                    //}
                 }else{
                     return tipoId;
                 }
@@ -544,6 +550,9 @@ public class JavaScript {
                 return tipoL;
             }else if(id == 20 || id == 22 || id == 13 || id == 16 || id == 17){ // * < ) ; ,
                 writer.writeParse("14");
+                if(exId == -1){
+                    return error;
+                }
                 return vacio + " 0";
             }else{
                 GenError(7, tokensStrings[12] + "' | '" + tokensStrings[20] + "' | '" + tokensStrings[22] + "' | '" + tokensStrings[13] + "' | '" + tokensStrings[16] + "' | '" + tokensStrings[17]);
@@ -580,7 +589,8 @@ public class JavaScript {
                 boolean posEx;
                 if(dentroFun){ // si esta dentro de una funcion
                     posEx = mapaTSL.containsKey(lexema);
-                    if(posEx){ // esta en local
+                    if(posEx){ // esta en localo
+                        pos = mapaTSL.get(lexema);
                         tipo = (String)((ArrayList<Object>)tablaSimLocal.get(pos)).get(1);
                     }else{
                         tipo = (String)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(1);
@@ -593,7 +603,8 @@ public class JavaScript {
                 }
                 String tipoS2 = S2(tipo);
                 String[] tiposS2 = tipoS2.split(" ");
-                if(tipo.equals(fun)){
+                //System.out.println(tipo);
+                if(tipo.equals(fun) && !tiposS2[0].equals(error)){
                     String numeroParam;
                     ArrayList<String> tipoParam;
                     int numeroParametrosTabla = (Integer)((ArrayList<Object>)tablaSimGlobal.get(pos)).get(3);
@@ -621,15 +632,13 @@ public class JavaScript {
                     }        
                 }else if(tiposS2[0].equals(tipo)){
                     return ok;
-                }/*else{
-                    GenError(23, tipo);
+                }else{
                     return error;
-                }*/
+                }
             }else if(id == 10){ // print
                 writer.writeParse("16");
                 equipara(10); // print
                 String tipoE = E();
-                //equipara(16); // ;
                 if(tipoE.equals(cadena) || tipoE.equals(ent)){
                     equipara(16); // ;
                     return ok;
@@ -722,6 +731,13 @@ public class JavaScript {
             int id = sigToken.getID();
             if(id == 18){ // =
                 writer.writeParse("19");
+                if(tipoVar.equals(fun)){
+                    GenError(32, "");
+                    equipara(18); // =
+                    E();
+                    equipara(16); // ;
+                    return error;
+                }
                 equipara(18); // =
                 String tipoE = E();
                 if(!tipoE.equals(tipoVar)){
@@ -750,6 +766,13 @@ public class JavaScript {
                 return fun + " " + tipoL;
             }else if(id == 19){ // +=
                 writer.writeParse("21");
+                if(tipoVar.equals(fun)){
+                    GenError(32, "");
+                    equipara(19); // +=
+                    E();
+                    equipara(16); // ;
+                    return error;
+                }
                 int pos = mapaTSG.get(lexema);
                 String tipoId = (String)((ArrayList<Object>)(tablaSimGlobal.get(pos))).get(1);
                 if(!tipoId.equals(ent)){
@@ -964,7 +987,7 @@ public class JavaScript {
                 dentroFun = true;
                 zonaDeclaracion = true;
                 equipara(8); // function
-                if(sigToken.getValue() == " "){ // No es identificador
+                if(sigToken.getValue().equals( " ")){ // No es identificador
                     GenError(13, "");
                     equipara(25); // id
                     H();
@@ -1255,7 +1278,7 @@ public class JavaScript {
     }
 
     private static void GenError (int error, String data){
-        int numero;
+        int numero = 0;
         if(data.equals("id")){
             data="identicador (nombre de una variable o función)";
         }else if(data.equals("ent")){
@@ -1263,11 +1286,15 @@ public class JavaScript {
         }else if(data.equals("lexema")){
             data = "cadena de caracteres";
         }
+        if(sigToken != null){
+
+        
        if(sigToken.getID()==65535){
             numero=0;
         }
        else{
             numero=sigToken.getID();
+        }
         }
         switch(error){
             case 1: 
@@ -1296,9 +1323,7 @@ public class JavaScript {
                 break;
             case 5:
                 writer.writeError("Error semántico (5): Línea " + line + ": Ya existe el identificador " + data + ". Elija otro nombre.\n");
-                errorState = true;
-                //GenTS();
-                //Terminar();
+                errorState = true;;
                 break;
             case 6:
                 writer.writeError("Error sintáctico (6): Línea " + line + ": Se ha encontrado '" + tokensStrings[numero] + "' y se esperaba '" + data + "'\n");
@@ -1321,45 +1346,31 @@ public class JavaScript {
             case 9:
                 writer.writeError("Error semántico (9): Línea " + line + ": El identificador '" + data + "' no está declarado.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 10:
                 writer.writeError("Error semántico (10): Línea " + line + ": La expresión debe ser de tipo lógico.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 11:
                 String[] datos = data.split(" ");
                 writer.writeError("Error semántico (11): Línea " + line + ": Se ha encontrado un parámetro de tipo " + datos[0] + " y se esperaba un parámetro de tipo "+ datos[1] + ".\n");
-                errorState = true;
-                //GenTS();
-                //Terminar();
+                errorState = true;;
                 break;
             case 12:
                 writer.writeError("Error semántico (12): Línea " + line + ": La instrucción print solo evalua expresiones de tipo cadena o de tipo entero.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 13:
                 writer.writeError("Error semántico (13): Línea " + line + ": No se ha definido un nombre para la función.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 14:
                 writer.writeError("Error semántico (14): Línea " + line + ": La función no tiene definido un valor de retorno.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 15:
                 writer.writeError("Error semántico (15): Línea " + line + ": Ambos lados de la expresión deben de ser de tipo entero.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 16:
                 writer.writeError("Error léxico (16): Línea " + line + ": Para definir las cadenas de caracteres use comillas simples en vez de dobles.\n");
@@ -1370,69 +1381,47 @@ public class JavaScript {
             case 17:
                 writer.writeError("Error semántico (17): Línea " + line + ": La función " + data + " no está declarada.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 18:
                 writer.writeError("Error semántico (18): Línea " + line + ": El lenguaje no permite la definición de funciones anidadas.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 19:
                 writer.writeError("Error semántico (19): Línea " + line + ": El lenguaje no permite la definición de funciones dentro de un bucle.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 20:
                 String[] tipos = data.split(" ");
                 writer.writeError("Error semántico (20): Línea " + line + ": El tipo de retorno (" +tipos[0] +") no coincide con el definido en la función (" + tipos[1] + ").\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 21:
                 writer.writeError("Error semántico (21): Línea " + line + ": La función tiene que devolver una expresión de tipo " + data + ".\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 22:
                 writer.writeError("Error semántico (22): Línea " + line + ": Una función sin retorno no debe devolver nada.\n");
-                errorState = true;
-                //GenTS();
-                //Terminar();
+                errorState = true;;
                 break;
             case 23:
                 writer.writeError("Error semántico (23): Línea " + line + ": Ambos lados de la expresión deben de ser de tipo " + data + ".\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;  
             case 24:
                 writer.writeError("Error semántico (24): Línea " + line + ": Los operadores aritméticos (+=) solo se aplican sobre tipos enteros.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 25:
                 writer.writeError("Error semántico (25): Línea " + line + ": Los operadores relacionales (<) solo se aplican sobre tipos enteros.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;   
             case 26:
                 writer.writeError("Error semántico (26): Línea " + line + ": Los operadores lógicos (!) solo se aplican sobre tipos lógicos.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 27:
                 writer.writeError("Error semántico (27): Línea " + line + ": Los operadores aritméticos (*) solo se aplican sobre tipos enteros.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break; 
             case 28:
                 if(data.equals("1")){
@@ -1441,26 +1430,22 @@ public class JavaScript {
                     writer.writeError("Error semántico (28): Línea " + line + ": No coincide el número de parámetros de la función. Debería tener " + data +" parámetros.\n");
                 }
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break; 
             case 29:
-                writer.writeError("Error semántico (29): Línea " + line + ": El orden para declarar una variable es: let + identificador + tipo\n");
+                writer.writeError("Error sintáctico (29): Línea " + line + ": El orden para declarar una variable es: let + identificador + tipo\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 30:
                 writer.writeError("Error semántico (30): Línea " + line + ": La función '"+ data +"' debe tener retorno al no ser de tipo vacio.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
                 break;
             case 31:
                 writer.writeError("Error semántico (31): Línea " + line + ": La instrucción input solo evalua expresiones de tipo cadena o de tipo entero.\n");
                 errorState = true;
-                //GenTS();
-                //Terminar();
+                break;
+            case 32:
+                writer.writeError("Error semántico (32): Línea " + line + ": No se puede asignar un valor a una función.\n");
+                errorState = true;
                 break;
         }
 }
@@ -1471,6 +1456,7 @@ public class JavaScript {
             e.printStackTrace();
         }
         System.out.println("Se han producido errores. Consulte el fichero 'errors.txt' para encontrar los detalles.");
+        destroyTS();
         System.exit(0);
     }
     
@@ -1523,9 +1509,25 @@ public class JavaScript {
             numeroTablasLocales++;
         }
     }
-
+    @SuppressWarnings("unchecked")
     private static void destroyTS(){
-        symbolsTable.clear();
+        for ( int i = 0; i < tablaSimGlobal.size(); i++){
+            List<Object> lista =(ArrayList<Object>)tablaSimGlobal.get(i);
+            lista.clear();
+        }
+        tablaSimGlobal.clear();
+        for ( int j = 0; j < tablasLocal.size(); j++){
+            List<Object> listaL =(ArrayList<Object>)tablasLocal.get(j);
+            int p = 0;
+            while ( p < listaL.size()){
+                List<Object> atrib =(ArrayList<Object>)listaL.get(p);
+                atrib.clear();
+                p++;
+            }
+            listaL.clear();      
+        }
+        tablasLocal.clear();
+        nombreLocales.clear();
     }
 
     private static void fillKeywords(){
@@ -1539,12 +1541,11 @@ public class JavaScript {
 
     public static void main(String[] args) { // args contains the arguments
         if(args.length != 1){
-            System.err.println("Uso: java JavaScript.java <input.txt>");
+            System.err.println("Uso: java -jar JavaScript-PDL.jar <input.txt>");
             System.exit(FAILURE);
         }
 
         afd = new AFD();
-        symbolsTable = new ArrayList<>();
         reader = new Reader(args[0]);
         c = reader.read();
         writer = new Writer("tokens.txt", "ts.txt", "errors.txt", "parse.txt");
@@ -1557,7 +1558,7 @@ public class JavaScript {
         if(errorState){
             System.out.println("Se han producido errores. Consulte el fichero 'errors.txt' para encontrar los detalles.");
         }else{
-            System.out.println("Todo bien jiji");
+            System.out.println("Programa sin errores.");
         }
         System.exit(SUCCED);
     }
